@@ -8,36 +8,39 @@ export const getAllResults = async (req, res) => {
     const { event_id, driver_id, saison } = req.query;
 
     let query = `
-      SELECT r.*, d.first_name, d.last_name, d.driver_number,
-             t.team_name, e.event_name, s.year,
-             c.circuit_name
+      SELECT r.id_result, r.id_driver, r.id_bareme, r.id_planning,
+             u.firstname, u.lastname,
+             b.place, b.point,
+             e.nom as event_name, s.nom as saison_name, s.annee,
+             c.nom as circuit_name
       FROM results r
-      LEFT JOIN drivers d ON r.driver_id = d.id
-      LEFT JOIN teams t ON d.team_id = t.id
-      LEFT JOIN evenements e ON r.evenement_id = e.id
-      LEFT JOIN saisons s ON e.saisons_id = s.id
-      LEFT JOIN circuits c ON e.circuit_id = c.id
+      LEFT JOIN drivers d ON r.id_driver = d.id_driver
+      LEFT JOIN users u ON d.id_user = u.id_user
+      LEFT JOIN bareme b ON r.id_bareme = b.id_bareme
+      LEFT JOIN evenements e ON r.id_planning = e.id_planning
+      LEFT JOIN saisons s ON e.id_saison = s.id_saison
+      LEFT JOIN circuits c ON e.id_circuits = c.id_circuits
       WHERE 1=1
     `;
 
     const params = [];
 
     if (event_id) {
-      query += ' AND r.evenement_id = ?';
+      query += ' AND r.id_planning = ?';
       params.push(event_id);
     }
 
     if (driver_id) {
-      query += ' AND r.driver_id = ?';
+      query += ' AND r.id_driver = ?';
       params.push(driver_id);
     }
 
     if (saison) {
-      query += ' AND s.year = ?';
+      query += ' AND s.annee = ?';
       params.push(saison);
     }
 
-    query += ' ORDER BY e.date_evenement DESC, r.position';
+    query += ' ORDER BY e.date_heure DESC, b.place';
 
     const [results] = await connection.query(query, params);
 
@@ -65,16 +68,19 @@ export const getResultById = async (req, res) => {
     const { id } = req.params;
 
     const [results] = await connection.query(
-      `SELECT r.*, d.first_name, d.last_name, d.driver_number,
-              t.team_name, e.event_name, e.date_evenement,
-              c.circuit_name, s.year
+      `SELECT r.id_result, r.id_driver, r.id_bareme, r.id_planning,
+              u.firstname, u.lastname,
+              b.place, b.point,
+              e.nom as event_name, e.date_heure,
+              c.nom as circuit_name, s.nom as saison_name, s.annee
        FROM results r
-       LEFT JOIN drivers d ON r.driver_id = d.id
-       LEFT JOIN teams t ON d.team_id = t.id
-       LEFT JOIN evenements e ON r.evenement_id = e.id
-       LEFT JOIN circuits c ON e.circuit_id = c.id
-       LEFT JOIN saisons s ON e.saisons_id = s.id
-       WHERE r.id = ?`,
+       LEFT JOIN drivers d ON r.id_driver = d.id_driver
+       LEFT JOIN users u ON d.id_user = u.id_user
+       LEFT JOIN bareme b ON r.id_bareme = b.id_bareme
+       LEFT JOIN evenements e ON r.id_planning = e.id_planning
+       LEFT JOIN circuits c ON e.id_circuits = c.id_circuits
+       LEFT JOIN saisons s ON e.id_saison = s.id_saison
+       WHERE r.id_result = ?`,
       [id]
     );
 
@@ -105,41 +111,32 @@ export const createResult = async (req, res) => {
 
   try {
     const {
-      evenement_id, driver_id, position, points,
-      laps_completed, time, status
+      id_planning, id_driver, id_bareme
     } = req.body;
 
-    if (!evenement_id || !driver_id || position === undefined) {
+    if (!id_planning || !id_driver) {
       return res.status(400).json({
-        error: 'Event ID, driver ID and position are required'
+        error: 'Event ID (id_planning) and driver ID are required'
       });
     }
 
-    // Get points from bareme if not provided
-    let finalPoints = points;
-    if (finalPoints === undefined && position > 0 && position <= 10) {
-      const [bareme] = await connection.query(
-        'SELECT points FROM bareme WHERE position = ?',
-        [position]
-      );
-      if (bareme.length > 0) {
-        finalPoints = bareme[0].points;
-      }
-    }
-
     const [result] = await connection.query(
-      `INSERT INTO results (evenement_id, driver_id, position, points, laps_completed, time, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [evenement_id, driver_id, position, finalPoints || 0, laps_completed || null, time || null, status || 'Finished']
+      `INSERT INTO results (id_planning, id_driver, id_bareme)
+       VALUES (?, ?, ?)`,
+      [id_planning, id_driver, id_bareme || null]
     );
 
     const [results] = await connection.query(
-      `SELECT r.*, d.first_name, d.last_name, t.team_name, e.event_name
+      `SELECT r.id_result, r.id_driver, r.id_bareme, r.id_planning,
+              u.firstname, u.lastname,
+              b.place, b.point,
+              e.nom as event_name
        FROM results r
-       LEFT JOIN drivers d ON r.driver_id = d.id
-       LEFT JOIN teams t ON d.team_id = t.id
-       LEFT JOIN evenements e ON r.evenement_id = e.id
-       WHERE r.id = ?`,
+       LEFT JOIN drivers d ON r.id_driver = d.id_driver
+       LEFT JOIN users u ON d.id_user = u.id_user
+       LEFT JOIN bareme b ON r.id_bareme = b.id_bareme
+       LEFT JOIN evenements e ON r.id_planning = e.id_planning
+       WHERE r.id_result = ?`,
       [result.insertId]
     );
 
@@ -166,11 +163,10 @@ export const updateResult = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      evenement_id, driver_id, position, points,
-      laps_completed, time, status
+      id_planning, id_driver, id_bareme
     } = req.body;
 
-    const [existing] = await connection.query('SELECT id FROM results WHERE id = ?', [id]);
+    const [existing] = await connection.query('SELECT id_result FROM results WHERE id_result = ?', [id]);
 
     if (existing.length === 0) {
       return res.status(404).json({
@@ -180,24 +176,24 @@ export const updateResult = async (req, res) => {
 
     await connection.query(
       `UPDATE results
-       SET evenement_id = COALESCE(?, evenement_id),
-           driver_id = COALESCE(?, driver_id),
-           position = COALESCE(?, position),
-           points = COALESCE(?, points),
-           laps_completed = COALESCE(?, laps_completed),
-           time = COALESCE(?, time),
-           status = COALESCE(?, status)
-       WHERE id = ?`,
-      [evenement_id, driver_id, position, points, laps_completed, time, status, id]
+       SET id_planning = COALESCE(?, id_planning),
+           id_driver = COALESCE(?, id_driver),
+           id_bareme = COALESCE(?, id_bareme)
+       WHERE id_result = ?`,
+      [id_planning, id_driver, id_bareme, id]
     );
 
     const [results] = await connection.query(
-      `SELECT r.*, d.first_name, d.last_name, t.team_name, e.event_name
+      `SELECT r.id_result, r.id_driver, r.id_bareme, r.id_planning,
+              u.firstname, u.lastname,
+              b.place, b.point,
+              e.nom as event_name
        FROM results r
-       LEFT JOIN drivers d ON r.driver_id = d.id
-       LEFT JOIN teams t ON d.team_id = t.id
-       LEFT JOIN evenements e ON r.evenement_id = e.id
-       WHERE r.id = ?`,
+       LEFT JOIN drivers d ON r.id_driver = d.id_driver
+       LEFT JOIN users u ON d.id_user = u.id_user
+       LEFT JOIN bareme b ON r.id_bareme = b.id_bareme
+       LEFT JOIN evenements e ON r.id_planning = e.id_planning
+       WHERE r.id_result = ?`,
       [id]
     );
 
@@ -224,7 +220,7 @@ export const deleteResult = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [existing] = await connection.query('SELECT id FROM results WHERE id = ?', [id]);
+    const [existing] = await connection.query('SELECT id_result FROM results WHERE id_result = ?', [id]);
 
     if (existing.length === 0) {
       return res.status(404).json({
@@ -232,7 +228,7 @@ export const deleteResult = async (req, res) => {
       });
     }
 
-    await connection.query('DELETE FROM results WHERE id = ?', [id]);
+    await connection.query('DELETE FROM results WHERE id_result = ?', [id]);
 
     res.json({
       message: 'Result deleted successfully'

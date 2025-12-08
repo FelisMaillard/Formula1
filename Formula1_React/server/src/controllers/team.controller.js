@@ -6,9 +6,9 @@ export const getAllTeams = async (req, res) => {
 
   try {
     const [teams] = await connection.query(
-      `SELECT t.*
-       FROM teams t
-       ORDER BY t.libelle`
+      `SELECT id_team, libelle, date_creation, points
+       FROM teams
+       ORDER BY libelle`
     );
 
     res.json({
@@ -35,10 +35,9 @@ export const getTeamById = async (req, res) => {
     const { id } = req.params;
 
     const [teams] = await connection.query(
-      `SELECT t.*, n.country_name as nationality
-       FROM teams t
-       LEFT JOIN nationalites n ON t.nationalite_id = n.id
-       WHERE t.id = ?`,
+      `SELECT id_team, libelle, date_creation, points
+       FROM teams
+       WHERE id_team = ?`,
       [id]
     );
 
@@ -50,11 +49,11 @@ export const getTeamById = async (req, res) => {
 
     // Get team drivers
     const [drivers] = await connection.query(
-      `SELECT d.id, d.driver_number, d.first_name, d.last_name,
-              d.birth_date, n.country_name as nationality
+      `SELECT d.id_driver, d.points, u.firstname, u.lastname, u.email
        FROM drivers d
-       LEFT JOIN nationalites n ON d.nationalite_id = n.id
-       WHERE d.team_id = ?`,
+       INNER JOIN users u ON d.id_user = u.id_user
+       INNER JOIN teams_users tu ON u.id_user = tu.id_user
+       WHERE tu.id_team = ?`,
       [id]
     );
 
@@ -79,25 +78,24 @@ export const createTeam = async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
-    const { team_name, base_location, team_principal, chassis, power_unit, nationalite_id } = req.body;
+    const { libelle, date_creation, points } = req.body;
 
-    if (!team_name) {
+    if (!libelle) {
       return res.status(400).json({
-        error: 'Team name is required'
+        error: 'Team name (libelle) is required'
       });
     }
 
     const [result] = await connection.query(
-      `INSERT INTO teams (team_name, base_location, team_principal, chassis, power_unit, nationalite_id)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [team_name, base_location || null, team_principal || null, chassis || null, power_unit || null, nationalite_id || null]
+      `INSERT INTO teams (libelle, date_creation, points)
+       VALUES (?, ?, ?)`,
+      [libelle, date_creation || null, points || 0]
     );
 
     const [teams] = await connection.query(
-      `SELECT t.*, n.country_name as nationality
-       FROM teams t
-       LEFT JOIN nationalites n ON t.nationalite_id = n.id
-       WHERE t.id = ?`,
+      `SELECT id_team, libelle, date_creation, points
+       FROM teams
+       WHERE id_team = ?`,
       [result.insertId]
     );
 
@@ -123,10 +121,10 @@ export const updateTeam = async (req, res) => {
 
   try {
     const { id } = req.params;
-    const { team_name, base_location, team_principal, chassis, power_unit, nationalite_id } = req.body;
+    const { libelle, date_creation, points } = req.body;
 
     // Check if team exists
-    const [existing] = await connection.query('SELECT id FROM teams WHERE id = ?', [id]);
+    const [existing] = await connection.query('SELECT id_team FROM teams WHERE id_team = ?', [id]);
 
     if (existing.length === 0) {
       return res.status(404).json({
@@ -136,21 +134,17 @@ export const updateTeam = async (req, res) => {
 
     await connection.query(
       `UPDATE teams
-       SET team_name = COALESCE(?, team_name),
-           base_location = COALESCE(?, base_location),
-           team_principal = COALESCE(?, team_principal),
-           chassis = COALESCE(?, chassis),
-           power_unit = COALESCE(?, power_unit),
-           nationalite_id = COALESCE(?, nationalite_id)
-       WHERE id = ?`,
-      [team_name, base_location, team_principal, chassis, power_unit, nationalite_id, id]
+       SET libelle = COALESCE(?, libelle),
+           date_creation = COALESCE(?, date_creation),
+           points = COALESCE(?, points)
+       WHERE id_team = ?`,
+      [libelle, date_creation, points, id]
     );
 
     const [teams] = await connection.query(
-      `SELECT t.*, n.country_name as nationality
-       FROM teams t
-       LEFT JOIN nationalites n ON t.nationalite_id = n.id
-       WHERE t.id = ?`,
+      `SELECT id_team, libelle, date_creation, points
+       FROM teams
+       WHERE id_team = ?`,
       [id]
     );
 
@@ -178,7 +172,7 @@ export const deleteTeam = async (req, res) => {
     const { id } = req.params;
 
     // Check if team exists
-    const [existing] = await connection.query('SELECT team_name FROM teams WHERE id = ?', [id]);
+    const [existing] = await connection.query('SELECT libelle FROM teams WHERE id_team = ?', [id]);
 
     if (existing.length === 0) {
       return res.status(404).json({
@@ -186,11 +180,11 @@ export const deleteTeam = async (req, res) => {
       });
     }
 
-    await connection.query('DELETE FROM teams WHERE id = ?', [id]);
+    await connection.query('DELETE FROM teams WHERE id_team = ?', [id]);
 
     res.json({
       message: 'Team deleted successfully',
-      teamName: existing[0].team_name
+      teamName: existing[0].libelle
     });
 
   } catch (error) {

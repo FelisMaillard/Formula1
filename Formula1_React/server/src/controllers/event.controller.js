@@ -8,29 +8,30 @@ export const getAllEvents = async (req, res) => {
     const { saison, type } = req.query;
 
     let query = `
-      SELECT e.*, te.type_name, s.year, c.circuit_name,
-             l.city, l.country
+      SELECT e.id_planning, e.nom, e.date_heure,
+             te.libelle as type_name, s.nom as saison_name, s.annee,
+             c.nom as circuit_name, l.ville, l.pays
       FROM evenements e
-      LEFT JOIN type_evenements te ON e.type_evenements_id = te.id
-      LEFT JOIN saisons s ON e.saisons_id = s.id
-      LEFT JOIN circuits c ON e.circuit_id = c.id
-      LEFT JOIN localisations l ON c.localisation_id = l.id
+      LEFT JOIN type_evenements te ON e.id_type_evenement = te.id_type_evenement
+      LEFT JOIN saisons s ON e.id_saison = s.id_saison
+      LEFT JOIN circuits c ON e.id_circuits = c.id_circuits
+      LEFT JOIN localisations l ON c.id_localisation = l.id_localisation
       WHERE 1=1
     `;
 
     const params = [];
 
     if (saison) {
-      query += ' AND s.year = ?';
+      query += ' AND s.annee = ?';
       params.push(saison);
     }
 
     if (type) {
-      query += ' AND te.type_name = ?';
+      query += ' AND te.libelle = ?';
       params.push(type);
     }
 
-    query += ' ORDER BY e.date_evenement DESC, e.time_evenement';
+    query += ' ORDER BY e.date_heure DESC';
 
     const [events] = await connection.query(query, params);
 
@@ -58,14 +59,16 @@ export const getEventById = async (req, res) => {
     const { id } = req.params;
 
     const [events] = await connection.query(
-      `SELECT e.*, te.type_name, s.year, c.circuit_name, c.circuit_length,
-              l.city, l.country
+      `SELECT e.id_planning, e.nom, e.date_heure,
+              te.libelle as type_name, s.nom as saison_name, s.annee,
+              c.nom as circuit_name, c.longueur,
+              l.ville, l.pays
        FROM evenements e
-       LEFT JOIN type_evenements te ON e.type_evenements_id = te.id
-       LEFT JOIN saisons s ON e.saisons_id = s.id
-       LEFT JOIN circuits c ON e.circuit_id = c.id
-       LEFT JOIN localisations l ON c.localisation_id = l.id
-       WHERE e.id = ?`,
+       LEFT JOIN type_evenements te ON e.id_type_evenement = te.id_type_evenement
+       LEFT JOIN saisons s ON e.id_saison = s.id_saison
+       LEFT JOIN circuits c ON e.id_circuits = c.id_circuits
+       LEFT JOIN localisations l ON c.id_localisation = l.id_localisation
+       WHERE e.id_planning = ?`,
       [id]
     );
 
@@ -77,13 +80,15 @@ export const getEventById = async (req, res) => {
 
     // Get results for this event
     const [results] = await connection.query(
-      `SELECT r.*, d.first_name, d.last_name, d.driver_number,
-              t.team_name
+      `SELECT r.id_result, r.id_driver, r.id_bareme,
+              u.firstname, u.lastname,
+              b.place, b.point
        FROM results r
-       LEFT JOIN drivers d ON r.driver_id = d.id
-       LEFT JOIN teams t ON d.team_id = t.id
-       WHERE r.evenement_id = ?
-       ORDER BY r.position`,
+       LEFT JOIN drivers d ON r.id_driver = d.id_driver
+       LEFT JOIN users u ON d.id_user = u.id_user
+       LEFT JOIN bareme b ON r.id_bareme = b.id_bareme
+       WHERE r.id_planning = ?
+       ORDER BY b.place`,
       [id]
     );
 
@@ -109,29 +114,31 @@ export const createEvent = async (req, res) => {
 
   try {
     const {
-      event_name, date_evenement, time_evenement,
-      circuit_id, saisons_id, type_evenements_id
+      nom, date_heure,
+      id_circuits, id_saison, id_type_evenement
     } = req.body;
 
-    if (!event_name || !date_evenement || !circuit_id || !saisons_id || !type_evenements_id) {
+    if (!nom || !date_heure || !id_circuits || !id_saison || !id_type_evenement) {
       return res.status(400).json({
         error: 'Event name, date, circuit, season and type are required'
       });
     }
 
     const [result] = await connection.query(
-      `INSERT INTO evenements (event_name, date_evenement, time_evenement, circuit_id, saisons_id, type_evenements_id)
-       VALUES (?, ?, ?, ?, ?, ?)`,
-      [event_name, date_evenement, time_evenement || null, circuit_id, saisons_id, type_evenements_id]
+      `INSERT INTO evenements (nom, date_heure, id_circuits, id_saison, id_type_evenement)
+       VALUES (?, ?, ?, ?, ?)`,
+      [nom, date_heure, id_circuits, id_saison, id_type_evenement]
     );
 
     const [events] = await connection.query(
-      `SELECT e.*, te.type_name, s.year, c.circuit_name
+      `SELECT e.id_planning, e.nom, e.date_heure,
+              te.libelle as type_name, s.nom as saison_name, s.annee,
+              c.nom as circuit_name
        FROM evenements e
-       LEFT JOIN type_evenements te ON e.type_evenements_id = te.id
-       LEFT JOIN saisons s ON e.saisons_id = s.id
-       LEFT JOIN circuits c ON e.circuit_id = c.id
-       WHERE e.id = ?`,
+       LEFT JOIN type_evenements te ON e.id_type_evenement = te.id_type_evenement
+       LEFT JOIN saisons s ON e.id_saison = s.id_saison
+       LEFT JOIN circuits c ON e.id_circuits = c.id_circuits
+       WHERE e.id_planning = ?`,
       [result.insertId]
     );
 
@@ -158,11 +165,11 @@ export const updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
     const {
-      event_name, date_evenement, time_evenement,
-      circuit_id, saisons_id, type_evenements_id
+      nom, date_heure,
+      id_circuits, id_saison, id_type_evenement
     } = req.body;
 
-    const [existing] = await connection.query('SELECT id FROM evenements WHERE id = ?', [id]);
+    const [existing] = await connection.query('SELECT id_planning FROM evenements WHERE id_planning = ?', [id]);
 
     if (existing.length === 0) {
       return res.status(404).json({
@@ -172,23 +179,24 @@ export const updateEvent = async (req, res) => {
 
     await connection.query(
       `UPDATE evenements
-       SET event_name = COALESCE(?, event_name),
-           date_evenement = COALESCE(?, date_evenement),
-           time_evenement = COALESCE(?, time_evenement),
-           circuit_id = COALESCE(?, circuit_id),
-           saisons_id = COALESCE(?, saisons_id),
-           type_evenements_id = COALESCE(?, type_evenements_id)
-       WHERE id = ?`,
-      [event_name, date_evenement, time_evenement, circuit_id, saisons_id, type_evenements_id, id]
+       SET nom = COALESCE(?, nom),
+           date_heure = COALESCE(?, date_heure),
+           id_circuits = COALESCE(?, id_circuits),
+           id_saison = COALESCE(?, id_saison),
+           id_type_evenement = COALESCE(?, id_type_evenement)
+       WHERE id_planning = ?`,
+      [nom, date_heure, id_circuits, id_saison, id_type_evenement, id]
     );
 
     const [events] = await connection.query(
-      `SELECT e.*, te.type_name, s.year, c.circuit_name
+      `SELECT e.id_planning, e.nom, e.date_heure,
+              te.libelle as type_name, s.nom as saison_name, s.annee,
+              c.nom as circuit_name
        FROM evenements e
-       LEFT JOIN type_evenements te ON e.type_evenements_id = te.id
-       LEFT JOIN saisons s ON e.saisons_id = s.id
-       LEFT JOIN circuits c ON e.circuit_id = c.id
-       WHERE e.id = ?`,
+       LEFT JOIN type_evenements te ON e.id_type_evenement = te.id_type_evenement
+       LEFT JOIN saisons s ON e.id_saison = s.id_saison
+       LEFT JOIN circuits c ON e.id_circuits = c.id_circuits
+       WHERE e.id_planning = ?`,
       [id]
     );
 
@@ -215,7 +223,7 @@ export const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [existing] = await connection.query('SELECT event_name FROM evenements WHERE id = ?', [id]);
+    const [existing] = await connection.query('SELECT nom FROM evenements WHERE id_planning = ?', [id]);
 
     if (existing.length === 0) {
       return res.status(404).json({
@@ -223,11 +231,11 @@ export const deleteEvent = async (req, res) => {
       });
     }
 
-    await connection.query('DELETE FROM evenements WHERE id = ?', [id]);
+    await connection.query('DELETE FROM evenements WHERE id_planning = ?', [id]);
 
     res.json({
       message: 'Event deleted successfully',
-      eventName: existing[0].event_name
+      eventName: existing[0].nom
     });
 
   } catch (error) {
@@ -253,7 +261,7 @@ export const getEventTypes = async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
-    const [types] = await connection.query('SELECT * FROM type_evenements ORDER BY id');
+    const [types] = await connection.query('SELECT id_type_evenement, libelle FROM type_evenements ORDER BY id_type_evenement');
 
     res.json({
       eventTypes: types
@@ -275,7 +283,7 @@ export const getSeasons = async (req, res) => {
   const connection = await pool.getConnection();
 
   try {
-    const [seasons] = await connection.query('SELECT * FROM saisons ORDER BY year DESC');
+    const [seasons] = await connection.query('SELECT id_saison, nom, annee, date_debut, date_fin FROM saisons ORDER BY annee DESC');
 
     res.json({
       seasons

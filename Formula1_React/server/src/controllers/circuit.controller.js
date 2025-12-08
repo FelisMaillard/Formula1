@@ -36,10 +36,10 @@ export const getCircuitById = async (req, res) => {
     const { id } = req.params;
 
     const [circuits] = await connection.query(
-      `SELECT c.*, l.city, l.country, l.postal_code
+      `SELECT c.id_circuits, c.nom, c.longueur, l.ville, l.pays
        FROM circuits c
-       LEFT JOIN localisations l ON c.localisation_id = l.id
-       WHERE c.id = ?`,
+       LEFT JOIN localisations l ON c.id_localisation = l.id_localisation
+       WHERE c.id_circuits = ?`,
       [id]
     );
 
@@ -51,12 +51,12 @@ export const getCircuitById = async (req, res) => {
 
     // Get events at this circuit
     const [events] = await connection.query(
-      `SELECT e.*, te.type_name, s.year
+      `SELECT e.id_planning, e.nom, e.date_heure, te.libelle as type_name, s.nom as saison_name, s.annee
        FROM evenements e
-       LEFT JOIN type_evenements te ON e.type_evenements_id = te.id
-       LEFT JOIN saisons s ON e.saisons_id = s.id
-       WHERE e.circuit_id = ?
-       ORDER BY e.date_evenement DESC
+       LEFT JOIN type_evenements te ON e.id_type_evenement = te.id_type_evenement
+       LEFT JOIN saisons s ON e.id_saison = s.id_saison
+       WHERE e.id_circuits = ?
+       ORDER BY e.date_heure DESC
        LIMIT 10`,
       [id]
     );
@@ -84,37 +84,37 @@ export const createCircuit = async (req, res) => {
   try {
     await connection.beginTransaction();
 
-    const { circuit_name, circuit_length, number_of_laps, lap_record, city, country, postal_code } = req.body;
+    const { nom, longueur, ville, pays } = req.body;
 
-    if (!circuit_name) {
+    if (!nom) {
       await connection.rollback();
       return res.status(400).json({
-        error: 'Circuit name is required'
+        error: 'Circuit name (nom) is required'
       });
     }
 
     // Create location if provided
-    let localisation_id = null;
-    if (city || country) {
+    let id_localisation = null;
+    if (ville || pays) {
       const [locResult] = await connection.query(
-        'INSERT INTO localisations (city, country, postal_code) VALUES (?, ?, ?)',
-        [city || null, country || null, postal_code || null]
+        'INSERT INTO localisations (ville, pays) VALUES (?, ?)',
+        [ville || null, pays || null]
       );
-      localisation_id = locResult.insertId;
+      id_localisation = locResult.insertId;
     }
 
     // Create circuit
     const [result] = await connection.query(
-      `INSERT INTO circuits (circuit_name, circuit_length, number_of_laps, lap_record, localisation_id)
-       VALUES (?, ?, ?, ?, ?)`,
-      [circuit_name, circuit_length || null, number_of_laps || null, lap_record || null, localisation_id]
+      `INSERT INTO circuits (nom, longueur, id_localisation)
+       VALUES (?, ?, ?)`,
+      [nom, longueur || null, id_localisation]
     );
 
     const [circuits] = await connection.query(
-      `SELECT c.*, l.city, l.country, l.postal_code
+      `SELECT c.id_circuits, c.nom, c.longueur, l.ville, l.pays
        FROM circuits c
-       LEFT JOIN localisations l ON c.localisation_id = l.id
-       WHERE c.id = ?`,
+       LEFT JOIN localisations l ON c.id_localisation = l.id_localisation
+       WHERE c.id_circuits = ?`,
       [result.insertId]
     );
 
@@ -143,9 +143,9 @@ export const updateCircuit = async (req, res) => {
 
   try {
     const { id } = req.params;
-    const { circuit_name, circuit_length, number_of_laps, lap_record, city, country, postal_code } = req.body;
+    const { nom, longueur, ville, pays } = req.body;
 
-    const [existing] = await connection.query('SELECT * FROM circuits WHERE id = ?', [id]);
+    const [existing] = await connection.query('SELECT * FROM circuits WHERE id_circuits = ?', [id]);
 
     if (existing.length === 0) {
       return res.status(404).json({
@@ -156,23 +156,22 @@ export const updateCircuit = async (req, res) => {
     await connection.beginTransaction();
 
     // Update location if needed
-    if (city || country || postal_code) {
-      if (existing[0].localisation_id) {
+    if (ville || pays) {
+      if (existing[0].id_localisation) {
         await connection.query(
           `UPDATE localisations
-           SET city = COALESCE(?, city),
-               country = COALESCE(?, country),
-               postal_code = COALESCE(?, postal_code)
-           WHERE id = ?`,
-          [city, country, postal_code, existing[0].localisation_id]
+           SET ville = COALESCE(?, ville),
+               pays = COALESCE(?, pays)
+           WHERE id_localisation = ?`,
+          [ville, pays, existing[0].id_localisation]
         );
       } else {
         const [locResult] = await connection.query(
-          'INSERT INTO localisations (city, country, postal_code) VALUES (?, ?, ?)',
-          [city || null, country || null, postal_code || null]
+          'INSERT INTO localisations (ville, pays) VALUES (?, ?)',
+          [ville || null, pays || null]
         );
         await connection.query(
-          'UPDATE circuits SET localisation_id = ? WHERE id = ?',
+          'UPDATE circuits SET id_localisation = ? WHERE id_circuits = ?',
           [locResult.insertId, id]
         );
       }
@@ -181,19 +180,17 @@ export const updateCircuit = async (req, res) => {
     // Update circuit
     await connection.query(
       `UPDATE circuits
-       SET circuit_name = COALESCE(?, circuit_name),
-           circuit_length = COALESCE(?, circuit_length),
-           number_of_laps = COALESCE(?, number_of_laps),
-           lap_record = COALESCE(?, lap_record)
-       WHERE id = ?`,
-      [circuit_name, circuit_length, number_of_laps, lap_record, id]
+       SET nom = COALESCE(?, nom),
+           longueur = COALESCE(?, longueur)
+       WHERE id_circuits = ?`,
+      [nom, longueur, id]
     );
 
     const [circuits] = await connection.query(
-      `SELECT c.*, l.city, l.country, l.postal_code
+      `SELECT c.id_circuits, c.nom, c.longueur, l.ville, l.pays
        FROM circuits c
-       LEFT JOIN localisations l ON c.localisation_id = l.id
-       WHERE c.id = ?`,
+       LEFT JOIN localisations l ON c.id_localisation = l.id_localisation
+       WHERE c.id_circuits = ?`,
       [id]
     );
 
@@ -223,7 +220,7 @@ export const deleteCircuit = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const [existing] = await connection.query('SELECT circuit_name FROM circuits WHERE id = ?', [id]);
+    const [existing] = await connection.query('SELECT nom FROM circuits WHERE id_circuits = ?', [id]);
 
     if (existing.length === 0) {
       return res.status(404).json({
@@ -231,11 +228,11 @@ export const deleteCircuit = async (req, res) => {
       });
     }
 
-    await connection.query('DELETE FROM circuits WHERE id = ?', [id]);
+    await connection.query('DELETE FROM circuits WHERE id_circuits = ?', [id]);
 
     res.json({
       message: 'Circuit deleted successfully',
-      circuitName: existing[0].circuit_name
+      circuitName: existing[0].nom
     });
 
   } catch (error) {

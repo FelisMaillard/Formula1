@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { AdminTeams } from '../components/admin/AdminTeams';
-import { AdminDrivers } from '../components/admin/AdminDrivers';
+import { AdminUsers } from '../components/admin/AdminUsers';
 import { AdminCircuits } from '../components/admin/AdminCircuits';
 import { AdminEvents } from '../components/admin/AdminEvents';
 import { AdminResults } from '../components/admin/AdminResults';
@@ -12,7 +12,7 @@ export const Admin = () => {
 
   const tabs = [
     { id: 'teams', label: 'Teams', icon: '🏎️' },
-    { id: 'drivers', label: 'Drivers', icon: '👤' },
+    { id: 'users', label: 'Users / Drivers', icon: '👤' },
     { id: 'circuits', label: 'Circuits', icon: '🏁' },
     { id: 'events', label: 'Events', icon: '📅' },
     { id: 'results', label: 'Results', icon: '📊' }
@@ -51,7 +51,7 @@ export const Admin = () => {
         {/* Content */}
         <div className="bg-white rounded-lg shadow-md p-6">
           {activeTab === 'teams' && <AdminTeams />}
-          {activeTab === 'drivers' && <AdminDrivers />}
+          {activeTab === 'users' && <AdminUsers />}
           {activeTab === 'circuits' && <AdminCircuits />}
           {activeTab === 'events' && <AdminEvents />}
           {activeTab === 'results' && <AdminResults />}

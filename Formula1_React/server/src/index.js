@@ -11,6 +11,7 @@ import circuitRoutes from './routes/circuit.routes.js';
 import eventRoutes from './routes/event.routes.js';
 import resultRoutes from './routes/result.routes.js';
 import statsRoutes from './routes/stats.routes.js';
+import userRoutes from './routes/user.routes.js';
 
 dotenv.config();
 
@@ -44,6 +45,7 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/drivers', driverRoutes);
 app.use('/api/circuits', circuitRoutes);
