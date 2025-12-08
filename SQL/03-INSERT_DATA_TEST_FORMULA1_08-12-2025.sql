@@ -84,116 +84,121 @@ INSERT INTO circuits (nom, longueur, id_localisation) VALUES
 -- ============================================
 -- UTILISATEURS - PILOTES F1 2025
 -- ============================================
-INSERT INTO users (firstname, lastname, email) VALUES 
+INSERT INTO users (firstname, lastname, email, password, is_admin) VALUES 
+-- Admin user
+('Felis', 'Maillard', 'felis.maillard@gmail.com', '$2a$10$oqF9w96QPzdtmmZcVtF7huvVzAfFxhMk1QJbWKYILpH8seO.2LZ5m', TRUE),
 -- McLaren
-('Oscar', 'Piastri', 'oscar.piastri@mclaren.com'),
-('Lando', 'Norris', 'lando.norris@mclaren.com'),
+('Oscar', 'Piastri', 'oscar.piastri@mclaren.com', NULL, FALSE),
+('Lando', 'Norris', 'lando.norris@mclaren.com', NULL, FALSE),
 -- Red Bull Racing
-('Max', 'Verstappen', 'max.verstappen@redbull.com'),
-('Yuki', 'Tsunoda', 'yuki.tsunoda@redbull.com'),
+('Max', 'Verstappen', 'max.verstappen@redbull.com', NULL, FALSE),
+('Yuki', 'Tsunoda', 'yuki.tsunoda@redbull.com', NULL, FALSE),
 -- Ferrari
-('Charles', 'Leclerc', 'charles.leclerc@ferrari.com'),
-('Lewis', 'Hamilton', 'lewis.hamilton@ferrari.com'),
+('Charles', 'Leclerc', 'charles.leclerc@ferrari.com', NULL, FALSE),
+('Lewis', 'Hamilton', 'lewis.hamilton@ferrari.com', NULL, FALSE),
 -- Mercedes
-('George', 'Russell', 'george.russell@mercedes.com'),
-('Andrea Kimi', 'Antonelli', 'kimi.antonelli@mercedes.com'),
+('George', 'Russell', 'george.russell@mercedes.com', NULL, FALSE),
+('Andrea Kimi', 'Antonelli', 'kimi.antonelli@mercedes.com', NULL, FALSE),
 -- Aston Martin
-('Fernando', 'Alonso', 'fernando.alonso@astonmartin.com'),
-('Lance', 'Stroll', 'lance.stroll@astonmartin.com'),
+('Fernando', 'Alonso', 'fernando.alonso@astonmartin.com', NULL, FALSE),
+('Lance', 'Stroll', 'lance.stroll@astonmartin.com', NULL, FALSE),
 -- Alpine
-('Pierre', 'Gasly', 'pierre.gasly@alpine.com'),
-('Franco', 'Colapinto', 'franco.colapinto@alpine.com'),
+('Pierre', 'Gasly', 'pierre.gasly@alpine.com', NULL, FALSE),
+('Franco', 'Colapinto', 'franco.colapinto@alpine.com', NULL, FALSE),
 -- Haas
-('Esteban', 'Ocon', 'esteban.ocon@haas.com'),
-('Oliver', 'Bearman', 'oliver.bearman@haas.com'),
+('Esteban', 'Ocon', 'esteban.ocon@haas.com', NULL, FALSE),
+('Oliver', 'Bearman', 'oliver.bearman@haas.com', NULL, FALSE),
 -- Racing Bulls
-('Liam', 'Lawson', 'liam.lawson@racingbulls.com'),
-('Isack', 'Hadjar', 'isack.hadjar@racingbulls.com'),
+('Liam', 'Lawson', 'liam.lawson@racingbulls.com', NULL, FALSE),
+('Isack', 'Hadjar', 'isack.hadjar@racingbulls.com', NULL, FALSE),
 -- Williams
-('Alexander', 'Albon', 'alex.albon@williams.com'),
-('Carlos', 'Sainz', 'carlos.sainz@williams.com'),
+('Alexander', 'Albon', 'alex.albon@williams.com', NULL, FALSE),
+('Carlos', 'Sainz', 'carlos.sainz@williams.com', NULL, FALSE),
 -- Kick Sauber
-('Nico', 'Hulkenberg', 'nico.hulkenberg@sauber.com'),
-('Gabriel', 'Bortoleto', 'gabriel.bortoleto@sauber.com');
+('Nico', 'Hulkenberg', 'nico.hulkenberg@sauber.com', NULL, FALSE),
+('Gabriel', 'Bortoleto', 'gabriel.bortoleto@sauber.com', NULL, FALSE);
 
 -- ============================================
 -- DRIVERS (Pilotes actifs en 2025)
 -- ============================================
 INSERT INTO drivers (points, id_user) VALUES 
+-- Admin (non pilote)
 -- McLaren
-(408, 1),  -- Oscar Piastri
-(423, 2),  -- Lando Norris - Champion 2025
+(0, 2),  -- Oscar Piastri
+(0, 3),  -- Lando Norris
 -- Red Bull Racing
-(421, 3),  -- Max Verstappen
-(152, 4),  -- Yuki Tsunoda
+(0, 4),  -- Max Verstappen
+(0, 5),  -- Yuki Tsunoda
 -- Ferrari
-(356, 5),  -- Charles Leclerc
-(189, 6),  -- Lewis Hamilton
+(0, 6),  -- Charles Leclerc
+(0, 7),  -- Lewis Hamilton
 -- Mercedes
-(245, 7),  -- George Russell
-(142, 8),  -- Kimi Antonelli
+(0, 8),  -- George Russell
+(0, 9),  -- Kimi Antonelli
 -- Aston Martin
-(70, 9),   -- Fernando Alonso
-(16, 10),  -- Lance Stroll
+(0, 10),   -- Fernando Alonso
+(0, 11),  -- Lance Stroll
 -- Alpine
-(36, 11),  -- Pierre Gasly
-(29, 12),  -- Franco Colapinto
+(0, 12),  -- Pierre Gasly
+(0, 13),  -- Franco Colapinto
 -- Haas
-(48, 13),  -- Esteban Ocon
-(10, 14),  -- Oliver Bearman
+(0, 14),  -- Esteban Ocon
+(0, 15),  -- Oliver Bearman
 -- Racing Bulls
-(28, 15),  -- Liam Lawson
-(18, 16),  -- Isack Hadjar
+(0, 16),  -- Liam Lawson
+(0, 17),  -- Isack Hadjar
 -- Williams
-(12, 17),  -- Alexander Albon
-(5, 18),   -- Carlos Sainz
+(0, 18),  -- Alexander Albon
+(0, 19),   -- Carlos Sainz
 -- Kick Sauber
-(3, 19),   -- Nico Hulkenberg
-(1, 20);   -- Gabriel Bortoleto
+(0, 20),   -- Nico Hulkenberg
+(0, 21);   -- Gabriel Bortoleto
 
 -- ============================================
 -- NATIONALITÉS DES PILOTES
 -- ============================================
+-- Admin - France
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (1, 18);
 -- Oscar Piastri - Australie
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (1, 3);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (2, 3);
 -- Lando Norris - Royaume-Uni
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (2, 2);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (3, 2);
 -- Max Verstappen - Pays-Bas
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (3, 1);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (4, 1);
 -- Yuki Tsunoda - Japon
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (4, 8);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (5, 8);
 -- Charles Leclerc - Monaco
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (5, 4);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (6, 4);
 -- Lewis Hamilton - Royaume-Uni
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (6, 2);
--- George Russell - Royaume-Uni
 INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (7, 2);
+-- George Russell - Royaume-Uni
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (8, 2);
 -- Kimi Antonelli - Italie
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (8, 7);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (9, 7);
 -- Fernando Alonso - Espagne
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (9, 5);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (10, 5);
 -- Lance Stroll - Canada
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (10, 10);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (11, 10);
 -- Pierre Gasly - France
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (11, 6);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (12, 6);
 -- Franco Colapinto - Argentine
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (12, 14);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (13, 14);
 -- Esteban Ocon - France
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (13, 6);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (14, 6);
 -- Oliver Bearman - Royaume-Uni
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (14, 2);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (15, 2);
 -- Liam Lawson - Nouvelle-Zélande
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (15, 11);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (16, 11);
 -- Isack Hadjar - France
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (16, 6);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (17, 6);
 -- Alexander Albon - Thaïlande
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (17, 9);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (18, 9);
 -- Carlos Sainz - Espagne
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (18, 5);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (19, 5);
 -- Nico Hulkenberg - Allemagne
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (19, 12);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (20, 12);
 -- Gabriel Bortoleto - Brésil
-INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (20, 13);
+INSERT INTO nationalites_user (id_user, id_nationalite) VALUES (21, 13);
 
 -- ============================================
 -- TYPE UTILISATEUR - Tous sont pilotes
@@ -209,53 +214,53 @@ INSERT INTO users_type_users (id_user, id_type_user) VALUES
 -- ============================================
 -- McLaren
 INSERT INTO teams_users (id_user, id_team) VALUES 
-(1, 1),  -- Oscar Piastri
-(2, 1);  -- Lando Norris
+(2, 1),  -- Oscar Piastri
+(3, 1);  -- Lando Norris
 
 -- Red Bull Racing
 INSERT INTO teams_users (id_user, id_team) VALUES 
-(3, 2),  -- Max Verstappen
-(4, 2);  -- Yuki Tsunoda
+(4, 2),  -- Max Verstappen
+(5, 2);  -- Yuki Tsunoda
 
 -- Ferrari
 INSERT INTO teams_users (id_user, id_team) VALUES 
-(5, 3),  -- Charles Leclerc
-(6, 3);  -- Lewis Hamilton
+(6, 3),  -- Charles Leclerc
+(7, 3);  -- Lewis Hamilton
 
 -- Mercedes
 INSERT INTO teams_users (id_user, id_team) VALUES 
-(7, 4),  -- George Russell
-(8, 4);  -- Kimi Antonelli
+(8, 4),  -- George Russell
+(9, 4);  -- Kimi Antonelli
 
 -- Aston Martin
 INSERT INTO teams_users (id_user, id_team) VALUES 
-(9, 5),  -- Fernando Alonso
-(10, 5); -- Lance Stroll
+(10, 5),  -- Fernando Alonso
+(11, 5); -- Lance Stroll
 
 -- Alpine
 INSERT INTO teams_users (id_user, id_team) VALUES 
-(11, 6),  -- Pierre Gasly
-(12, 6);  -- Franco Colapinto
+(12, 6),  -- Pierre Gasly
+(13, 6);  -- Franco Colapinto
 
 -- Haas
 INSERT INTO teams_users (id_user, id_team) VALUES 
-(13, 7),  -- Esteban Ocon
-(14, 7);  -- Oliver Bearman
+(14, 7),  -- Esteban Ocon
+(15, 7);  -- Oliver Bearman
 
 -- Racing Bulls
 INSERT INTO teams_users (id_user, id_team) VALUES 
-(15, 8),  -- Liam Lawson
-(16, 8);  -- Isack Hadjar
+(16, 8),  -- Liam Lawson
+(17, 8);  -- Isack Hadjar
 
 -- Williams
 INSERT INTO teams_users (id_user, id_team) VALUES 
-(17, 9),  -- Alexander Albon
-(18, 9);  -- Carlos Sainz
+(18, 9),  -- Alexander Albon
+(19, 9);  -- Carlos Sainz
 
 -- Kick Sauber
 INSERT INTO teams_users (id_user, id_team) VALUES 
-(19, 10), -- Nico Hulkenberg
-(20, 10); -- Gabriel Bortoleto
+(20, 10), -- Nico Hulkenberg
+(21, 10); -- Gabriel Bortoleto
 
 -- ============================================
 -- ÉVÉNEMENTS DE LA SAISON 2025 (Courses principales)
