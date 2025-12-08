@@ -1,0 +1,15 @@
+#### users(id_user INT, firstname VARCHAR(50), lastname VARCHAR(50), email VARCHAR(50), password VARCHAR(50), is_admin BOOL);
+#### teams(id_team INT, libelle VARCHAR(50), date_creation DATE, points INT);
+#### type_users(id_type_user INT, libelle VARCHAR(50));
+#### nationalites(id_nationalite INT, libelle VARCHAR(50));
+#### saisons(id_saison INT, nom VARCHAR(50), annee INT, date_debut DATE, date_fin DATE);
+#### type_evenements(id_type_evenement INT, libelle VARCHAR(50));
+#### bareme(id_bareme INT, place INT, point INT);
+#### drivers(id_driver INT, points INT, #id_user);
+#### localisations(id_localisation INT, ville VARCHAR(50), pays VARCHAR(50));
+#### circuits(id_circuits INT, nom VARCHAR(50), longueur DECIMAL(15,2), #id_localisation);
+#### evenements(id_planning INT, nom VARCHAR(50), date_heure DATETIME, #id_type_evenement, #id_saison, #id_circuits);
+#### results(id_result INT, #id_driver, #id_bareme, #id_planning);
+#### nationalites_user(#id_user, #id_nationalite);
+#### users_type_users(#id_user, #id_type_user);
+#### teams_users(#id_user, #id_team);

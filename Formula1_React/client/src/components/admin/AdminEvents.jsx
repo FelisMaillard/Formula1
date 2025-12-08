@@ -96,136 +96,193 @@ export const AdminEvents = () => {
     setEditingId(null);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center py-12">
+      <div className="glass-card px-8 py-6">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-f1-red"></div>
+          <span className="text-white text-lg">Loading events...</span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">
-        {editingId ? 'Edit Event' : 'Add New Event'}
-      </h2>
+    <div className="space-y-8">
+      {/* Form Section */}
+      <div className="glass-card p-6 lg:p-8">
+        <h2 className="text-3xl font-bold gradient-text mb-6">
+          {editingId ? '✏️ Edit Event' : '➕ Add New Event'}
+        </h2>
 
-      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="text"
-            placeholder="Nom de l'événement *"
-            value={formData.nom}
-            onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-            required
-          />
-          <input
-            type="datetime-local"
-            placeholder="Date et heure *"
-            value={formData.date_heure}
-            onChange={(e) => setFormData({ ...formData, date_heure: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-            required
-          />
-          <select
-            value={formData.id_circuits}
-            onChange={(e) => setFormData({ ...formData, id_circuits: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-            required
-          >
-            <option value="">Sélectionner un circuit *</option>
-            {circuits.map(circuit => (
-              <option key={circuit.id_circuits} value={circuit.id_circuits}>
-                {circuit.nom}
-              </option>
-            ))}
-          </select>
-          <select
-            value={formData.id_saison}
-            onChange={(e) => setFormData({ ...formData, id_saison: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-            required
-          >
-            <option value="">Sélectionner une saison *</option>
-            {seasons.map(season => (
-              <option key={season.id_saison} value={season.id_saison}>
-                {season.nom} ({season.annee})
-              </option>
-            ))}
-          </select>
-          <select
-            value={formData.id_type_evenement}
-            onChange={(e) => setFormData({ ...formData, id_type_evenement: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-            required
-          >
-            <option value="">Sélectionner un type *</option>
-            {eventTypes.map(type => (
-              <option key={type.id_type_evenement} value={type.id_type_evenement}>
-                {type.libelle}
-              </option>
-            ))}
-          </select>
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="space-y-2 lg:col-span-2">
+              <label className="text-white/70 text-sm font-medium">Event Name *</label>
+              <input
+                type="text"
+                placeholder="e.g., Monaco Grand Prix"
+                value={formData.nom}
+                onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
+                className="input-glass"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Date & Time *</label>
+              <input
+                type="datetime-local"
+                value={formData.date_heure}
+                onChange={(e) => setFormData({ ...formData, date_heure: e.target.value })}
+                className="input-glass"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Circuit *</label>
+              <select
+                value={formData.id_circuits}
+                onChange={(e) => setFormData({ ...formData, id_circuits: e.target.value })}
+                className="input-glass"
+                required
+              >
+                <option value="">Select a circuit</option>
+                {circuits.map(circuit => (
+                  <option key={circuit.id_circuits} value={circuit.id_circuits}>
+                    {circuit.nom}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Season *</label>
+              <select
+                value={formData.id_saison}
+                onChange={(e) => setFormData({ ...formData, id_saison: e.target.value })}
+                className="input-glass"
+                required
+              >
+                <option value="">Select a season</option>
+                {seasons.map(season => (
+                  <option key={season.id_saison} value={season.id_saison}>
+                    {season.nom} ({season.annee})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Event Type *</label>
+              <select
+                value={formData.id_type_evenement}
+                onChange={(e) => setFormData({ ...formData, id_type_evenement: e.target.value })}
+                className="input-glass"
+                required
+              >
+                <option value="">Select event type</option>
+                {eventTypes.map(type => (
+                  <option key={type.id_type_evenement} value={type.id_type_evenement}>
+                    {type.libelle}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
 
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            {editingId ? 'Update' : 'Create'}
-          </button>
-          {editingId && (
+          <div className="flex gap-3 pt-2">
             <button
-              type="button"
-              onClick={handleCancel}
-              className="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
+              type="submit"
+              className="glass-button-gradient"
             >
-              Cancel
+              {editingId ? '💾 Update Event' : '✨ Create Event'}
             </button>
-          )}
-        </div>
-      </form>
+            {editingId && (
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="glass-button"
+              >
+                ✖️ Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Circuit</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saison</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {events.map((event) => (
-              <tr key={event.id_planning}>
-                <td className="px-6 py-4 whitespace-nowrap">{event.id_planning}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{event.nom}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {event.date_heure ? new Date(event.date_heure).toLocaleString('fr-FR') : 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{event.circuit_name || 'N/A'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{event.type_name || 'N/A'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {event.saison_name} ({event.annee})
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                  <button
-                    onClick={() => handleEdit(event)}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(event.id_planning)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Delete
-                  </button>
-                </td>
+      {/* Table Section */}
+      <div className="glass-card p-6 lg:p-8">
+        <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+          <span>📅</span>
+          <span>Events List</span>
+          <span className="text-sm font-normal text-white/50">({events.length} events)</span>
+        </h3>
+
+        <div className="overflow-x-auto">
+          <table className="table-glass">
+            <thead>
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">ID</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Event Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Date & Time</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Circuit</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Type</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Season</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {events.map((event, index) => (
+                <tr
+                  key={event.id_planning}
+                  className="group hover:bg-white/5 transition-colors duration-200"
+                  style={{
+                    animationDelay: `${index * 0.05}s`
+                  }}
+                >
+                  <td className="px-6 py-4 text-white/70">{event.id_planning}</td>
+                  <td className="px-6 py-4">
+                    <span className="font-semibold text-white">{event.nom}</span>
+                  </td>
+                  <td className="px-6 py-4 text-white/70">
+                    {event.date_heure ? new Date(event.date_heure).toLocaleString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    }) : 'N/A'}
+                  </td>
+                  <td className="px-6 py-4 text-white/70">{event.circuit_name || 'N/A'}</td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 font-semibold text-xs">
+                      {event.type_name || 'N/A'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-f1-red/20 text-f1-red font-semibold text-sm">
+                      {event.saison_name} {event.annee}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(event)}
+                        className="px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all duration-200 font-medium text-sm"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(event.id_planning)}
+                        className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all duration-200 font-medium text-sm"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

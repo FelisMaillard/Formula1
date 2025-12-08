@@ -19,37 +19,48 @@ export const Admin = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <div className="w-full px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            ⚙️ Admin Panel
+    <div className="min-h-screen bg-dark-950">
+      <div className="max-w-[1920px] mx-auto px-6 lg:px-12 py-12">
+        {/* Header */}
+        <div className="mb-12 animate-fade-in">
+          <h1 className="text-5xl lg:text-6xl font-bold gradient-text mb-4">
+            Admin Panel
           </h1>
-          <p className="text-gray-600">
-            Welcome, {user?.username}. Manage Formula 1 data below.
+          <p className="text-white/70 text-lg">
+            Welcome back, <span className="text-f1-red font-semibold">{user?.username}</span>. Manage your Formula 1 data with ease.
           </p>
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-wrap gap-2 mb-6">
-          {tabs.map((tab) => (
+        <div className="flex flex-wrap gap-3 mb-8 animate-slide-up">
+          {tabs.map((tab, index) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-3 rounded-lg font-semibold transition ${
+              className={`group relative px-6 py-3.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
                 activeTab === tab.id
-                  ? 'bg-red-600 text-white'
-                  : 'bg-white text-gray-700 hover:bg-gray-50'
+                  ? 'glass-card-active text-white shadow-lg shadow-f1-red/20'
+                  : 'glass-card text-white/80 hover:text-white'
               }`}
+              style={{
+                animationDelay: `${index * 0.1}s`
+              }}
             >
-              <span className="mr-2">{tab.icon}</span>
-              {tab.label}
+              <div className="flex items-center gap-2">
+                <span className="text-xl transform group-hover:scale-110 transition-transform duration-300">
+                  {tab.icon}
+                </span>
+                <span>{tab.label}</span>
+              </div>
+              {activeTab === tab.id && (
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-f1-red to-red-600 rounded-b-xl"></div>
+              )}
             </button>
           ))}
         </div>
 
         {/* Content */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="glass-card p-8 lg:p-10 animate-fade-in">
           {activeTab === 'teams' && <AdminTeams />}
           {activeTab === 'users' && <AdminUsers />}
           {activeTab === 'circuits' && <AdminCircuits />}
