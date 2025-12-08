@@ -78,10 +78,10 @@ public class ResultatsDAO {
 
             ps.setInt(1, eventId);
             try (ResultSet rs = ps.executeQuery()) {
-                System.out.println("\n🥇🥈🥉 PODIUM 🥉🥈🥇");
+                System.out.println("\n------ PODIUM ------");
                 while (rs.next()) {
-                    String medal = rs.getInt("place") == 1 ? "🥇" : 
-                                  rs.getInt("place") == 2 ? "🥈" : "🥉";
+                    String medal = rs.getInt("place") == 1 ? "1" : 
+                                  rs.getInt("place") == 2 ? "2" : "3";
                     System.out.printf("%s %s %s (%s) - %d pts%n",
                         medal,
                         rs.getString("firstname"),
@@ -116,7 +116,7 @@ public class ResultatsDAO {
                 System.out.println("\n=== RESULTATS PILOTE - SAISON ===");
                 int totalPoints = 0;
                 while (rs.next()) {
-                    System.out.printf("🏎️  %s - %d° place (%d pts) - %s%n",
+                    System.out.printf("%s - %d° place (%d pts) - %s%n",
                         rs.getString("course"),
                         rs.getInt("place"),
                         rs.getInt("point"),
@@ -124,7 +124,7 @@ public class ResultatsDAO {
                     );
                     totalPoints += rs.getInt("point");
                 }
-                System.out.printf("📊 TOTAL SAISON: %d points%n", totalPoints);
+                System.out.printf("TOTAL SAISON: %d points%n", totalPoints);
             }
         } catch (SQLException e) {
             System.err.println("[ERREUR] Driver season results : " + e.getMessage());
@@ -147,17 +147,17 @@ public class ResultatsDAO {
 
             ps.setInt(1, driverId);
             try (ResultSet rs = ps.executeQuery()) {
-                System.out.println("\n🏆 VICTOIRES PILOTE 🏆");
+                System.out.println("\n------ VICTOIRES PILOTE ------");
                 int totalWins = 0;
                 while (rs.next()) {
-                    System.out.printf("🥇 %s - %s (%s)%n",
+                    System.out.printf("%s - %s (%s)%n",
                         rs.getString("nom"),
                         rs.getString("circuit"),
                         rs.getString("date_heure")
                     );
                     totalWins++;
                 }
-                System.out.printf("📊 TOTAL VICTOIRES: %d%n", totalWins);
+                System.out.printf("TOTAL VICTOIRES: %d%n", totalWins);
             }
         } catch (SQLException e) {
             System.err.println("[ERREUR] Driver wins : " + e.getMessage());

@@ -153,9 +153,9 @@ public class EvenementsDAO {
              ResultSet rs = st.executeQuery(sql)) {
 
             if (rs.next()) {
-                System.out.println("\n🏁 PROCHAIN GRAND PRIX 🏁");
-                System.out.printf("📍 %s - %s%n", rs.getString("circuit"), rs.getString("pays"));
-                System.out.printf("📅 %s%n", rs.getString("date_heure"));
+                System.out.println("\n------ PROCHAIN GRAND PRIX ------");
+                System.out.printf("%s - %s%n", rs.getString("circuit"), rs.getString("pays"));
+                System.out.printf("%s%n", rs.getString("date_heure"));
                 System.out.println("========================");
             } else {
                 System.out.println("[INFO] Aucune course à venir.");
