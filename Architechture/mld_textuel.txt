@@ -10,6 +10,6 @@ localisations(id_localisation INT, ville VARCHAR(50), pays VARCHAR(50));
 circuits(id_circuits INT, nom VARCHAR(50), longueur DECIMAL(15,2), #id_localisation);
 evenements(id_planning INT, nom VARCHAR(50), date_heure DATETIME, #id_type_evenement, #id_saison, #id_circuits);
 results(id_result INT, #id_driver, #id_bareme, #id_planning);
-natonalites_user(#id_user, #id_nationalite);
+nationalites_user(#id_user, #id_nationalite);
 users_type_users(#id_user, #id_type_user);
 teams_users(#id_user, #id_team);
