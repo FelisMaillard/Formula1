@@ -142,4 +142,36 @@ public class TeamsDAO {
         }
         return teams;
     }
+
+    /**
+     * Associe un pilote à une équipe via teams_users
+     */
+    public void associateTeamUser(int teamId, int userId) {
+        String sql = "INSERT IGNORE INTO teams_users (id_team, id_user) VALUES (?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, teamId);
+            ps.setInt(2, userId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[ERREUR] Associate team-user : " + e.getMessage());
+        }
+    }
+
+    /**
+     * Supprime tous les liens teams_users pour une équipe
+     */
+    public void removeAllTeamUsers(int teamId) {
+        String sql = "DELETE FROM teams_users WHERE id_team = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, teamId);
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            System.err.println("[ERREUR] Remove team users : " + e.getMessage());
+        }
+    }
+
+
 }
