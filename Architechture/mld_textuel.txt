@@ -1,4 +1,4 @@
-users(id_user INT, firstname VARCHAR(50), lastname VARCHAR(50), email VARCHAR(50));
+users(id_user INT, firstname VARCHAR(50), lastname VARCHAR(50), email VARCHAR(50), password VARCHAR(50), is_admin BOOL);
 teams(id_team INT, libelle VARCHAR(50), date_creation DATE, points INT);
 type_users(id_type_user INT, libelle VARCHAR(50));
 nationalites(id_nationalite INT, libelle VARCHAR(50));

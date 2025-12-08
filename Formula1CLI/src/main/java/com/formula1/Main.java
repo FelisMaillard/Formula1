@@ -1,5 +1,6 @@
 package com.formula1;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -274,9 +275,54 @@ public class Main {
         System.out.print("Points : ");
         int points = readIntSafely();
 
+        // Création de l'équipe
         Team team = new Team(0, libelle, dateCreation, points);
         int rows = teamsDAO.create(team);
-        System.out.println(rows == 1 ? "[SUCCES] Equipe creee : " + team : "[ERREUR] Echec creation.");
+        if (rows != 1) {
+            System.out.println("[ERREUR] Echec creation equipe.");
+            return;
+        }
+
+        // Affichage des utilisateurs disponibles
+        System.out.println("\n--- Associer des pilotes a l'equipe ---");
+        List<Driver> drivers = driversDAO.findAll();
+        if (drivers.isEmpty()) {
+            System.out.println("[INFO] Aucun pilote disponible. Creation sans pilote.");
+            return;
+        }
+
+        System.out.println("[INFO] Pilotes disponibles :");
+        for (int i = 0; i < drivers.size(); i++) {
+            System.out.printf("  %d. %s %s (ID: %d)%n", i+1, drivers.get(i).getFirstname(), drivers.get(i).getLastname(), drivers.get(i).getId());
+        }
+
+        // Association des pilotes (max 2 pour F1)
+        List<Integer> pilotIds = new ArrayList<>();
+        int maxPilotes = Math.min(2, drivers.size());
+        
+        for (int i = 0; i < maxPilotes; i++) {
+            System.out.printf("Pilote %d (ID, 0 pour ignorer) : ", i+1);
+            int userId = readIntSafely();
+            if (userId > 0) {
+                User selectedUser = usersDAO.findById(userId);
+                if (selectedUser != null) {
+                    pilotIds.add(userId);
+                    System.out.println("[INFO] Ajoute: " + selectedUser.getFirstname() + " " + selectedUser.getLastname());
+                } else {
+                    System.out.println("[ATTENTION] Pilote non trouve, ignore.");
+                }
+            }
+        }
+
+        // Association via teams_users
+        if (!pilotIds.isEmpty()) {
+            for (int userId : pilotIds) {
+                teamsDAO.associateTeamUser(team.getId(), userId);
+            }
+            System.out.println("[SUCCES] Equipe creee et pilotes associes : " + team);
+        } else {
+            System.out.println("[SUCCES] Equipe creee sans pilote : " + team);
+        }
     }
 
     private static void listTeams() {
@@ -302,9 +348,15 @@ public class Main {
         }
 
         System.out.println("[INFO] Equipe actuelle : " + team);
+        System.out.println("[INFO] Appuyez sur Entree pour conserver la valeur actuelle.\n");
+
         System.out.print("Nouveau nom [" + team.getLibelle() + "] : ");
         String libelle = in.nextLine().trim();
         if (!libelle.isEmpty()) team.setLibelle(libelle);
+
+        System.out.print("Nouvelle date creation [" + team.getDateCreation() + "] : ");
+        String dateCreation = in.nextLine().trim();
+        if (!dateCreation.isEmpty()) team.setDateCreation(dateCreation);
 
         System.out.print("Nouveaux points [" + team.getPoints() + "] : ");
         String pointsStr = in.nextLine().trim();
@@ -316,9 +368,62 @@ public class Main {
             }
         }
 
+        // === GESTION DES PILOTES ===
+        System.out.println("\n--- Gestion des pilotes ---");
+        List<Driver> drivers = driversDAO.findAll();
+        if (!drivers.isEmpty()) {
+            System.out.println("[INFO] Pilotes disponibles :");
+            for (int i = 0; i < drivers.size(); i++) {
+                System.out.printf("  %d. %s %s (ID: %d)%n", i+1, drivers.get(i).getFirstname(), drivers.get(i).getLastname(), drivers.get(i).getId());
+            }
+
+            // Pilotes actuels de l'équipe
+            List<Driver> currentDrivers = driversDAO.findByTeam(id);
+            System.out.println("\n[INFO] Pilotes actuels de l'équipe :");
+            if (currentDrivers.isEmpty()) {
+                System.out.println("  Aucun pilote");
+            } else {
+                currentDrivers.forEach(d -> System.out.println("  > " + d));
+            }
+
+            // Nouveaux pilotes (max 2)
+            List<Integer> newPilotIds = new ArrayList<>();
+            int maxPilotes = Math.min(2, drivers.size());
+            
+            for (int i = 0; i < maxPilotes; i++) {
+                System.out.printf("Pilote %d (ID, 0 pour ignorer) : ", i+1);
+                int userId = readIntSafely();
+                if (userId > 0) {
+                    User selectedUser = usersDAO.findById(userId);
+                    if (selectedUser != null) {
+                        newPilotIds.add(userId);
+                        System.out.println("[INFO] Selectionne: " + selectedUser.getFirstname() + " " + selectedUser.getLastname());
+                    } else {
+                        System.out.println("[ATTENTION] Pilote non trouve, ignore.");
+                    }
+                }
+            }
+
+            // Supprimer anciens liens et ajouter nouveaux
+            if (!newPilotIds.isEmpty()) {
+                teamsDAO.removeAllTeamUsers(id); // Supprime tous les anciens liens
+                for (int userId : newPilotIds) {
+                    teamsDAO.associateTeamUser(id, userId);
+                }
+            }
+        }
+
+        System.out.print("\nConfirmer la modification ? (o/n) : ");
+        String confirm = in.nextLine().trim().toLowerCase();
+        if (!confirm.equals("o") && !confirm.equals("oui")) {
+            System.out.println("[INFO] Modification annulee.");
+            return;
+        }
+
         int rows = teamsDAO.update(team);
-        System.out.println(rows == 1 ? "[SUCCES] Equipe mise a jour." : "[ERREUR] Echec.");
+        System.out.println(rows == 1 ? "[SUCCES] Equipe mise a jour." : "[ERREUR] Echec mise a jour.");
     }
+
 
     private static void deleteTeam() {
         System.out.print("ID de l'equipe a supprimer : ");
