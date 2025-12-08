@@ -18,32 +18,34 @@ function App() {
   return (
     <AuthProvider>
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-dark-950">
           <Navbar />
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/teams" element={<Teams />} />
-            <Route path="/drivers" element={<Drivers />} />
-            <Route path="/circuits" element={<Circuits />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/standings" element={<Standings />} />
+          <main className="pt-20">
+            <Routes>
+              {/* Public routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/teams" element={<Teams />} />
+              <Route path="/drivers" element={<Drivers />} />
+              <Route path="/circuits" element={<Circuits />} />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/standings" element={<Standings />} />
 
-            {/* Protected admin routes */}
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute requireAdmin={true}>
-                  <Admin />
-                </ProtectedRoute>
-              }
-            />
+              {/* Protected admin routes */}
+              <Route
+                path="/admin"
+                element={
+                  <ProtectedRoute requireAdmin={true}>
+                    <Admin />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Catch all */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
+              {/* Catch all */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
         </div>
       </Router>
     </AuthProvider>

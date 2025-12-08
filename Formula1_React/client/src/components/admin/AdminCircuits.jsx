@@ -81,107 +81,156 @@ export const AdminCircuits = () => {
     setEditingId(null);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center py-12">
+      <div className="glass-card px-8 py-6">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-f1-red"></div>
+          <span className="text-white text-lg">Loading circuits...</span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">
-        {editingId ? 'Edit Circuit' : 'Add New Circuit'}
-      </h2>
+    <div className="space-y-8">
+      {/* Form Section */}
+      <div className="glass-card p-6 lg:p-8">
+        <h2 className="text-3xl font-bold gradient-text mb-6">
+          {editingId ? '✏️ Edit Circuit' : '➕ Add New Circuit'}
+        </h2>
 
-      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="text"
-            placeholder="Nom du circuit *"
-            value={formData.nom}
-            onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-            required
-          />
-          <input
-            type="number"
-            step="0.01"
-            placeholder="Longueur (km)"
-            value={formData.longueur}
-            onChange={(e) => setFormData({ ...formData, longueur: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-          />
-          <input
-            type="text"
-            placeholder="Ville"
-            value={formData.ville}
-            onChange={(e) => setFormData({ ...formData, ville: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-          />
-          <input
-            type="text"
-            placeholder="Pays"
-            value={formData.pays}
-            onChange={(e) => setFormData({ ...formData, pays: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Circuit Name *</label>
+              <input
+                type="text"
+                placeholder="e.g., Monaco Grand Prix Circuit"
+                value={formData.nom}
+                onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
+                className="input-glass"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Length (km)</label>
+              <input
+                type="number"
+                step="0.01"
+                placeholder="e.g., 5.412"
+                value={formData.longueur}
+                onChange={(e) => setFormData({ ...formData, longueur: e.target.value })}
+                className="input-glass"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">City</label>
+              <input
+                type="text"
+                placeholder="e.g., Monte Carlo"
+                value={formData.ville}
+                onChange={(e) => setFormData({ ...formData, ville: e.target.value })}
+                className="input-glass"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Country</label>
+              <input
+                type="text"
+                placeholder="e.g., Monaco"
+                value={formData.pays}
+                onChange={(e) => setFormData({ ...formData, pays: e.target.value })}
+                className="input-glass"
+              />
+            </div>
+          </div>
 
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            {editingId ? 'Update' : 'Create'}
-          </button>
-          {editingId && (
+          <div className="flex gap-3 pt-2">
             <button
-              type="button"
-              onClick={handleCancel}
-              className="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
+              type="submit"
+              className="glass-button-gradient"
             >
-              Cancel
+              {editingId ? '💾 Update Circuit' : '✨ Create Circuit'}
             </button>
-          )}
-        </div>
-      </form>
+            {editingId && (
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="glass-button"
+              >
+                ✖️ Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Longueur (km)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ville</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pays</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {circuits.map((circuit) => (
-              <tr key={circuit.id_circuits}>
-                <td className="px-6 py-4 whitespace-nowrap">{circuit.id_circuits}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{circuit.nom}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {circuit.longueur ? `${parseFloat(circuit.longueur).toFixed(2)} km` : 'N/A'}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{circuit.ville || 'N/A'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{circuit.pays || 'N/A'}</td>
-                <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                  <button
-                    onClick={() => handleEdit(circuit)}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(circuit.id_circuits)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Delete
-                  </button>
-                </td>
+      {/* Table Section */}
+      <div className="glass-card p-6 lg:p-8">
+        <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+          <span>🏁</span>
+          <span>Circuits List</span>
+          <span className="text-sm font-normal text-white/50">({circuits.length} circuits)</span>
+        </h3>
+
+        <div className="overflow-x-auto">
+          <table className="table-glass">
+            <thead>
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">ID</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Circuit Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Length</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">City</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Country</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {circuits.map((circuit, index) => (
+                <tr
+                  key={circuit.id_circuits}
+                  className="group hover:bg-white/5 transition-colors duration-200"
+                  style={{
+                    animationDelay: `${index * 0.05}s`
+                  }}
+                >
+                  <td className="px-6 py-4 text-white/70">{circuit.id_circuits}</td>
+                  <td className="px-6 py-4">
+                    <span className="font-semibold text-white">{circuit.nom}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    {circuit.longueur ? (
+                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 font-semibold text-sm">
+                        {parseFloat(circuit.longueur).toFixed(2)} km
+                      </span>
+                    ) : (
+                      <span className="text-white/30">N/A</span>
+                    )}
+                  </td>
+                  <td className="px-6 py-4 text-white/70">{circuit.ville || 'N/A'}</td>
+                  <td className="px-6 py-4 text-white/70">{circuit.pays || 'N/A'}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(circuit)}
+                        className="px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all duration-200 font-medium text-sm"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(circuit.id_circuits)}
+                        className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all duration-200 font-medium text-sm"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

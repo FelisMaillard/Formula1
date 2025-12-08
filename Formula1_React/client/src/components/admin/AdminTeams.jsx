@@ -77,94 +77,142 @@ export const AdminTeams = () => {
     setEditingId(null);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center py-12">
+      <div className="glass-card px-8 py-6">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-f1-red"></div>
+          <span className="text-white text-lg">Loading teams...</span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">
-        {editingId ? 'Edit Team' : 'Add New Team'}
-      </h2>
+    <div className="space-y-8">
+      {/* Form Section */}
+      <div className="glass-card p-6 lg:p-8">
+        <h2 className="text-3xl font-bold gradient-text mb-6">
+          {editingId ? '✏️ Edit Team' : '➕ Add New Team'}
+        </h2>
 
-      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <input
-            type="text"
-            placeholder="Nom de l'équipe *"
-            value={formData.libelle}
-            onChange={(e) => setFormData({ ...formData, libelle: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-            required
-          />
-          <input
-            type="date"
-            placeholder="Date de création"
-            value={formData.date_creation}
-            onChange={(e) => setFormData({ ...formData, date_creation: e.target.value })}
-            className="px-4 py-2 border rounded-md"
-          />
-          <input
-            type="number"
-            placeholder="Points"
-            value={formData.points}
-            onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) || 0 })}
-            className="px-4 py-2 border rounded-md"
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Team Name *</label>
+              <input
+                type="text"
+                placeholder="e.g., Red Bull Racing"
+                value={formData.libelle}
+                onChange={(e) => setFormData({ ...formData, libelle: e.target.value })}
+                className="input-glass"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Creation Date</label>
+              <input
+                type="date"
+                value={formData.date_creation}
+                onChange={(e) => setFormData({ ...formData, date_creation: e.target.value })}
+                className="input-glass"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Points</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={formData.points}
+                onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) || 0 })}
+                className="input-glass"
+              />
+            </div>
+          </div>
 
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            className="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-700"
-          >
-            {editingId ? 'Update' : 'Create'}
-          </button>
-          {editingId && (
+          <div className="flex gap-3 pt-2">
             <button
-              type="button"
-              onClick={handleCancel}
-              className="bg-gray-500 text-white px-6 py-2 rounded-md hover:bg-gray-600"
+              type="submit"
+              className="glass-button-gradient"
             >
-              Cancel
+              {editingId ? '💾 Update Team' : '✨ Create Team'}
             </button>
-          )}
-        </div>
-      </form>
+            {editingId && (
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="glass-button"
+              >
+                ✖️ Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
 
-      <h3 className="text-xl font-bold mb-4">Teams List</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="px-4 py-2 text-left">Nom</th>
-              <th className="px-4 py-2 text-left">Date création</th>
-              <th className="px-4 py-2 text-left">Points</th>
-              <th className="px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {teams.map((team) => (
-              <tr key={team.id_team} className="border-b">
-                <td className="px-4 py-2 font-semibold">{team.libelle}</td>
-                <td className="px-4 py-2">{team.date_creation ? new Date(team.date_creation).toLocaleDateString() : 'N/A'}</td>
-                <td className="px-4 py-2">{team.points || 0}</td>
-                <td className="px-4 py-2">
-                  <button
-                    onClick={() => handleEdit(team)}
-                    className="text-blue-600 hover:underline mr-2"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(team.id_team)}
-                    className="text-red-600 hover:underline"
-                  >
-                    Delete
-                  </button>
-                </td>
+      {/* Table Section */}
+      <div className="glass-card p-6 lg:p-8">
+        <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+          <span>🏆</span>
+          <span>Teams List</span>
+          <span className="text-sm font-normal text-white/50">({teams.length} teams)</span>
+        </h3>
+
+        <div className="overflow-x-auto">
+          <table className="table-glass">
+            <thead>
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Team Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Creation Date</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Points</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {teams.map((team, index) => (
+                <tr
+                  key={team.id_team}
+                  className="group hover:bg-white/5 transition-colors duration-200"
+                  style={{
+                    animationDelay: `${index * 0.05}s`
+                  }}
+                >
+                  <td className="px-6 py-4">
+                    <span className="font-semibold text-white">{team.libelle}</span>
+                  </td>
+                  <td className="px-6 py-4 text-white/70">
+                    {team.date_creation ? new Date(team.date_creation).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    }) : 'N/A'}
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-f1-red/20 text-f1-red font-semibold text-sm">
+                      {team.points || 0} pts
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(team)}
+                        className="px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all duration-200 font-medium text-sm"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(team.id_team)}
+                        className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all duration-200 font-medium text-sm"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
