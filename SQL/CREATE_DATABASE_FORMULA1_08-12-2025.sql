@@ -3,6 +3,10 @@
 -- Date : 08-12-2025
 -- ============================================
 
+CREATE DATABASE IF NOT EXISTS Formula1;
+
+USE Formula1;
+
 -- Suppression des tables si elles existent
 DROP TABLE IF EXISTS results;
 DROP TABLE IF EXISTS evenements;
