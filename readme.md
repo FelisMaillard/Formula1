@@ -29,9 +29,9 @@ Une plateforme complète d'informations Formula 1 présentant les équipes, les 
 - Données de championnats
 
 ## 🛠️ Stack Technologique
-- **Base de données** : SQL
-- **Backend** : [Votre framework backend]
-- **Frontend** : [Votre framework frontend]
+- **Base de données** : MySQL
+- **Backend** : Node.js + Express + JWT + bcryptjs
+- **Frontend** : React 19 + Vite + Tailwind CSS + React Router
 
 ## 📁 Structure du Projet
 ```

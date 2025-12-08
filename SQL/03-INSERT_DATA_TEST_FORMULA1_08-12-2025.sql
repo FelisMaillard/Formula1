@@ -7,16 +7,16 @@
 -- ÉQUIPES F1 2025
 -- ============================================
 INSERT INTO teams (libelle, date_creation, points) VALUES 
-('McLaren', '1963-09-02', 666),
-('Red Bull Racing', '2005-01-01', 589),
-('Ferrari', '1950-01-01', 652),
-('Mercedes', '1954-01-01', 468),
-('Aston Martin', '2021-01-01', 86),
-('Alpine', '2021-01-01', 65),
-('Haas F1 Team', '2016-01-01', 58),
-('Racing Bulls', '2006-01-01', 46),
-('Williams', '1977-01-01', 17),
-('Kick Sauber', '1993-01-01', 4);
+('McLaren', '1963-09-02', 0),
+('Red Bull Racing', '2005-01-01', 0),
+('Ferrari', '1950-01-01', 0),
+('Mercedes', '1954-01-01', 0),
+('Aston Martin', '2021-01-01', 0),
+('Alpine', '2021-01-01', 0),
+('Haas F1 Team', '2016-01-01', 0),
+('Racing Bulls', '2006-01-01', 0),
+('Williams', '1977-01-01', 0),
+('Kick Sauber', '1993-01-01', 0);
 
 -- ============================================
 -- LOCALISATIONS DES CIRCUITS
@@ -287,70 +287,128 @@ INSERT INTO evenements (nom, date_heure, id_type_evenement, id_saison, id_circui
 ('Grand Prix d\'Abu Dhabi', '2025-12-07 17:00:00', 5, 2, 24);
 
 -- ============================================
--- RÉSULTATS SÉLECTIONNÉS DE LA SAISON 2025
+-- RÉSULTATS COMPLETS DE LA SAISON 2025
+-- Ferrari et Leclerc dominent - Verstappen et Red Bull en difficulté
 -- ============================================
 
--- Grand Prix d'Australie (Victoire : Lando Norris)
+-- Grand Prix d'Australie
 INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
-(2, 1, 1),  -- Lando Norris - 1er (25 pts)
-(3, 2, 1),  -- Max Verstappen - 2e (18 pts)
-(7, 3, 1);  -- George Russell - 3e (15 pts)
+(5, 1, 1), (6, 2, 1), (18, 3, 1), (7, 4, 1), (2, 5, 1), (1, 6, 1), (9, 7, 1), (4, 8, 1), (11, 9, 1), (3, 10, 1);
 
--- Grand Prix de Chine (Victoire : Oscar Piastri)
+-- Grand Prix de Chine
 INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
-(1, 1, 2),  -- Oscar Piastri - 1er (25 pts)
-(2, 2, 2),  -- Lando Norris - 2e (18 pts)
-(7, 3, 2);  -- George Russell - 3e (15 pts)
+(6, 1, 2), (5, 2, 2), (7, 3, 2), (18, 4, 2), (2, 5, 2), (1, 6, 2), (9, 7, 2), (11, 8, 2), (4, 9, 2), (3, 10, 2);
 
--- Grand Prix du Japon (Victoire : Max Verstappen)
+-- Grand Prix du Japon
 INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
-(3, 1, 3),  -- Max Verstappen - 1er (25 pts)
-(2, 2, 3),  -- Lando Norris - 2e (18 pts)
-(1, 3, 3);  -- Oscar Piastri - 3e (15 pts)
+(5, 1, 3), (18, 2, 3), (6, 3, 3), (2, 4, 3), (7, 5, 3), (1, 6, 3), (9, 7, 3), (11, 8, 3), (4, 9, 3), (3, 10, 3);
 
--- Grand Prix de Bahreïn (Victoire : Oscar Piastri)
+-- Grand Prix de Bahreïn
 INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
-(1, 1, 4),  -- Oscar Piastri - 1er (25 pts)
-(2, 2, 4),  -- Lando Norris - 2e (18 pts)
-(5, 3, 4);  -- Charles Leclerc - 3e (15 pts)
+(5, 1, 4), (6, 2, 4), (7, 3, 4), (18, 4, 4), (2, 5, 4), (1, 6, 4), (9, 7, 4), (11, 8, 4), (4, 9, 4), (3, 10, 4);
 
--- Grand Prix d'Arabie Saoudite (Victoire : Oscar Piastri)
+-- Grand Prix d'Arabie Saoudite
 INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
-(1, 1, 5),  -- Oscar Piastri - 1er (25 pts)
-(5, 2, 5),  -- Charles Leclerc - 2e (18 pts)
-(7, 3, 5);  -- George Russell - 3e (15 pts)
+(6, 1, 5), (5, 2, 5), (18, 3, 5), (7, 4, 5), (2, 5, 5), (1, 6, 5), (9, 7, 5), (11, 8, 5), (4, 9, 5), (3, 10, 5);
 
--- Grand Prix de Miami (Victoire : Oscar Piastri)
+-- Grand Prix de Miami
 INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
-(1, 1, 6),  -- Oscar Piastri - 1er (25 pts)
-(3, 2, 6),  -- Max Verstappen - 2e (18 pts)
-(5, 3, 6);  -- Charles Leclerc - 3e (15 pts)
+(5, 1, 6), (6, 2, 6), (2, 3, 6), (18, 4, 6), (7, 5, 6), (1, 6, 6), (9, 7, 6), (11, 8, 6), (4, 9, 6), (3, 10, 6);
 
--- Grand Prix d'Italie (Victoire : Max Verstappen)
+-- Grand Prix d'Émilie-Romagne
 INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
-(3, 1, 16),  -- Max Verstappen - 1er (25 pts)
-(1, 2, 16),  -- Oscar Piastri - 2e (18 pts)
-(5, 3, 16);  -- Charles Leclerc - 3e (15 pts)
+(5, 1, 7), (18, 2, 7), (6, 3, 7), (7, 4, 7), (2, 5, 7), (1, 6, 7), (9, 7, 7), (11, 8, 7), (4, 9, 7), (3, 10, 7);
 
--- Grand Prix d'Azerbaïdjan (Victoire : Max Verstappen)
+-- Grand Prix de Monaco
 INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
-(3, 1, 17),  -- Max Verstappen - 1er (25 pts)
-(1, 2, 17),  -- Oscar Piastri - 2e (18 pts)
-(5, 3, 17);  -- Charles Leclerc - 3e (15 pts)
+(5, 1, 8), (6, 2, 8), (18, 3, 8), (7, 4, 8), (2, 5, 8), (1, 6, 8), (9, 7, 8), (11, 8, 8), (4, 9, 8), (3, 10, 8);
 
--- Grand Prix d'Abu Dhabi - FINALE (Victoire : Max Verstappen)
--- Lando Norris devient Champion du Monde avec sa 3e place
+-- Grand Prix d'Espagne
 INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
-(3, 1, 24),  -- Max Verstappen - 1er (25 pts)
-(1, 2, 24),  -- Oscar Piastri - 2e (18 pts)
-(2, 3, 24),  -- Lando Norris - 3e (15 pts) - CHAMPION DU MONDE 2025
-(5, 4, 24),  -- Charles Leclerc - 4e (12 pts)
-(7, 5, 24),  -- George Russell - 5e (10 pts)
-(9, 6, 24),  -- Fernando Alonso - 6e (8 pts)
-(13, 7, 24), -- Esteban Ocon - 7e (6 pts)
-(6, 8, 24),  -- Lewis Hamilton - 8e (4 pts)
-(19, 9, 24), -- Nico Hulkenberg - 9e (2 pts)
-(10, 10, 24); -- Lance Stroll - 10e (1 pt)
+(6, 1, 9), (5, 2, 9), (7, 3, 9), (18, 4, 9), (2, 5, 9), (1, 6, 9), (9, 7, 9), (11, 8, 9), (4, 9, 9), (3, 10, 9);
+
+-- Grand Prix du Canada
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(5, 1, 10), (6, 2, 10), (7, 3, 10), (2, 4, 10), (18, 5, 10), (1, 6, 10), (9, 7, 10), (11, 8, 10), (4, 9, 10), (3, 10, 10);
+
+-- Grand Prix d'Autriche
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(5, 1, 11), (6, 2, 11), (18, 3, 11), (7, 4, 11), (2, 5, 11), (1, 6, 11), (9, 7, 11), (11, 8, 11), (4, 9, 11), (3, 10, 11);
+
+-- Grand Prix de Grande-Bretagne
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(6, 1, 12), (7, 2, 12), (5, 3, 12), (18, 4, 12), (2, 5, 12), (1, 6, 12), (9, 7, 12), (11, 8, 12), (4, 9, 12), (3, 10, 12);
+
+-- Grand Prix de Hongrie
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(5, 1, 13), (6, 2, 13), (2, 3, 13), (18, 4, 13), (7, 5, 13), (1, 6, 13), (9, 7, 13), (11, 8, 13), (4, 9, 13), (3, 10, 13);
+
+-- Grand Prix de Belgique
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(6, 1, 14), (5, 2, 14), (7, 3, 14), (18, 4, 14), (2, 5, 14), (1, 6, 14), (9, 7, 14), (11, 8, 14), (4, 9, 14), (3, 10, 14);
+
+-- Grand Prix des Pays-Bas
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(5, 1, 15), (6, 2, 15), (18, 3, 15), (7, 4, 15), (2, 5, 15), (1, 6, 15), (9, 7, 15), (11, 8, 15), (4, 9, 15), (3, 10, 15);
+
+-- Grand Prix d'Italie
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(5, 1, 16), (18, 2, 16), (6, 3, 16), (7, 4, 16), (2, 5, 16), (1, 6, 16), (9, 7, 16), (11, 8, 16), (4, 9, 16), (3, 10, 16);
+
+-- Grand Prix d'Azerbaïdjan
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(6, 1, 17), (5, 2, 17), (7, 3, 17), (18, 4, 17), (2, 5, 17), (1, 6, 17), (9, 7, 17), (11, 8, 17), (4, 9, 17), (3, 10, 17);
+
+-- Grand Prix de Singapour
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(5, 1, 18), (6, 2, 18), (2, 3, 18), (7, 4, 18), (18, 5, 18), (1, 6, 18), (9, 7, 18), (11, 8, 18), (4, 9, 18), (3, 10, 18);
+
+-- Grand Prix des États-Unis
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(5, 1, 19), (6, 2, 19), (18, 3, 19), (7, 4, 19), (2, 5, 19), (1, 6, 19), (9, 7, 19), (11, 8, 19), (4, 9, 19), (3, 10, 19);
+
+-- Grand Prix du Mexique
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(6, 1, 20), (5, 2, 20), (18, 3, 20), (7, 4, 20), (2, 5, 20), (1, 6, 20), (9, 7, 20), (11, 8, 20), (4, 9, 20), (3, 10, 20);
+
+-- Grand Prix du Brésil
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(5, 1, 21), (6, 2, 21), (7, 3, 21), (18, 4, 21), (2, 5, 21), (1, 6, 21), (9, 7, 21), (11, 8, 21), (4, 9, 21), (3, 10, 21);
+
+-- Grand Prix de Las Vegas
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(6, 1, 22), (5, 2, 22), (7, 3, 22), (18, 4, 22), (2, 5, 22), (1, 6, 22), (9, 7, 22), (11, 8, 22), (4, 9, 22), (3, 10, 22);
+
+-- Grand Prix du Qatar
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(5, 1, 23), (6, 2, 23), (7, 3, 23), (18, 4, 23), (2, 5, 23), (1, 6, 23), (9, 7, 23), (11, 8, 23), (4, 9, 23), (3, 10, 23);
+
+-- Grand Prix d'Abu Dhabi - FINALE
+-- Charles Leclerc devient Champion du Monde 2025!
+INSERT INTO results (id_driver, id_bareme, id_planning) VALUES 
+(5, 1, 24), (6, 2, 24), (18, 3, 24), (7, 4, 24), (2, 5, 24), (1, 6, 24), (9, 7, 24), (11, 8, 24), (4, 9, 24), (3, 10, 24);
+
+-- ============================================
+-- MISE À JOUR DES POINTS
+-- ============================================
+
+-- Mise à jour automatique des points pilotes
+UPDATE drivers d SET points = (
+    SELECT COALESCE(SUM(b.point), 0)
+    FROM results r
+    INNER JOIN bareme b ON r.id_bareme = b.id_bareme
+    WHERE r.id_driver = d.id_driver
+);
+
+-- Mise à jour automatique des points équipes
+UPDATE teams t SET points = (
+    SELECT COALESCE(SUM(b.point), 0)
+    FROM results r
+    INNER JOIN bareme b ON r.id_bareme = b.id_bareme
+    INNER JOIN drivers d ON r.id_driver = d.id_driver
+    INNER JOIN teams_users tu ON d.id_user = tu.id_user
+    WHERE tu.id_team = t.id_team
+);
 
 -- ============================================
 -- FIN DU SCRIPT
