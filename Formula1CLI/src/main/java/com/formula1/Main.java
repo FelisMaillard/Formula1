@@ -1,15 +1,20 @@
 package com.formula1;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import com.formula1.dao.CircuitsDAO;
 import com.formula1.dao.DriversDAO;
+import com.formula1.dao.EvenementsDAO;
+import com.formula1.dao.ResultatsDAO;
+import com.formula1.dao.SaisonsDAO;
+import com.formula1.dao.StatistiquesDAO;
 import com.formula1.dao.TeamsDAO;
 import com.formula1.dao.UsersDAO;
 import com.formula1.model.Circuit;
 import com.formula1.model.Driver;
+import com.formula1.model.Evenement;
+import com.formula1.model.Saison;
 import com.formula1.model.Team;
 import com.formula1.model.User;
 
@@ -19,6 +24,10 @@ public class Main {
     private static final TeamsDAO teamsDAO = new TeamsDAO();
     private static final DriversDAO driversDAO = new DriversDAO();
     private static final CircuitsDAO circuitsDAO = new CircuitsDAO();
+    private static final SaisonsDAO saisonsDAO = new SaisonsDAO();
+    private static final EvenementsDAO evenementsDAO = new EvenementsDAO();
+    private static final ResultatsDAO resultatsDAO = new ResultatsDAO();
+    private static final StatistiquesDAO statistiquesDAO = new StatistiquesDAO();
 
     public static void main(String[] args) {
         int choice;
@@ -26,13 +35,27 @@ public class Main {
             System.out.println("\n==========================================");
             System.out.println("      GESTION BASE DE DONNEES F1 2025     ");
             System.out.println("==========================================");
-            System.out.println("1.  Gestion Users (Pilotes)");
-            System.out.println("2.  Gestion Teams (Equipes)");
-            System.out.println("3.  Gestion Circuits");
+            System.out.println("GESTION DES DONNEES");
+            System.out.println("1.  Users (Pilotes)");
+            System.out.println("2.  Teams (Equipes)");
+            System.out.println("3.  Circuits");
+            System.out.println("4.  Saisons");
+            System.out.println("5.  Evenements (Courses)");
+            System.out.println("6.  Resultats");
             System.out.println("-------------------------------------------");
-            System.out.println("10. Classement Pilotes 2025");
-            System.out.println("11. Classement Equipes 2025");
-            System.out.println("12. Liste des Circuits");
+            System.out.println("CLASSEMENTS & CALENDRIERS");
+            System.out.println("10. Classement Pilotes");
+            System.out.println("11. Classement Equipes");
+            System.out.println("12. Calendrier Saison");
+            System.out.println("13. Prochain Grand Prix");
+            System.out.println("-------------------------------------------");
+            System.out.println("STATISTIQUES");
+            System.out.println("20. Top Vainqueurs");
+            System.out.println("21. Top Podiums");
+            System.out.println("22. Stats Pilote");
+            System.out.println("23. Comparer 2 Pilotes");
+            System.out.println("24. Performance Equipes");
+            System.out.println("25. Derniers Vainqueurs");
             System.out.println("-------------------------------------------");
             System.out.println("0.  Quitter");
             System.out.println("==========================================");
@@ -45,9 +68,19 @@ public class Main {
                 case 1 -> menuUsers();
                 case 2 -> menuTeams();
                 case 3 -> menuCircuits();
+                case 4 -> menuSaisons();
+                case 5 -> menuEvenements();
+                case 6 -> menuResultats();
                 case 10 -> driversDAO.getDriverStandings();
                 case 11 -> teamsDAO.getTeamStandings();
-                case 12 -> listCircuits();
+                case 12 -> showSeasonCalendar();
+                case 13 -> evenementsDAO.getNextEvent();
+                case 20 -> statistiquesDAO.getTopWinners();
+                case 21 -> statistiquesDAO.getTopPodiums();
+                case 22 -> showDriverStats();
+                case 23 -> compareTwoDrivers();
+                case 24 -> statistiquesDAO.getBestTeamPerformance();
+                case 25 -> showLastWinners();
                 case 0 -> System.out.println("[INFO] Fermeture de l'application...");
                 default -> System.out.println("[ERREUR] Choix invalide.");
             }
@@ -275,54 +308,9 @@ public class Main {
         System.out.print("Points : ");
         int points = readIntSafely();
 
-        // Création de l'équipe
         Team team = new Team(0, libelle, dateCreation, points);
         int rows = teamsDAO.create(team);
-        if (rows != 1) {
-            System.out.println("[ERREUR] Echec creation equipe.");
-            return;
-        }
-
-        // Affichage des utilisateurs disponibles
-        System.out.println("\n--- Associer des pilotes a l'equipe ---");
-        List<Driver> drivers = driversDAO.findAll();
-        if (drivers.isEmpty()) {
-            System.out.println("[INFO] Aucun pilote disponible. Creation sans pilote.");
-            return;
-        }
-
-        System.out.println("[INFO] Pilotes disponibles :");
-        for (int i = 0; i < drivers.size(); i++) {
-            System.out.printf("  %d. %s %s (ID: %d)%n", i+1, drivers.get(i).getFirstname(), drivers.get(i).getLastname(), drivers.get(i).getId());
-        }
-
-        // Association des pilotes (max 2 pour F1)
-        List<Integer> pilotIds = new ArrayList<>();
-        int maxPilotes = Math.min(2, drivers.size());
-        
-        for (int i = 0; i < maxPilotes; i++) {
-            System.out.printf("Pilote %d (ID, 0 pour ignorer) : ", i+1);
-            int userId = readIntSafely();
-            if (userId > 0) {
-                User selectedUser = usersDAO.findById(userId);
-                if (selectedUser != null) {
-                    pilotIds.add(userId);
-                    System.out.println("[INFO] Ajoute: " + selectedUser.getFirstname() + " " + selectedUser.getLastname());
-                } else {
-                    System.out.println("[ATTENTION] Pilote non trouve, ignore.");
-                }
-            }
-        }
-
-        // Association via teams_users
-        if (!pilotIds.isEmpty()) {
-            for (int userId : pilotIds) {
-                teamsDAO.associateTeamUser(team.getId(), userId);
-            }
-            System.out.println("[SUCCES] Equipe creee et pilotes associes : " + team);
-        } else {
-            System.out.println("[SUCCES] Equipe creee sans pilote : " + team);
-        }
+        System.out.println(rows == 1 ? "[SUCCES] Equipe creee : " + team : "[ERREUR] Echec creation.");
     }
 
     private static void listTeams() {
@@ -348,15 +336,9 @@ public class Main {
         }
 
         System.out.println("[INFO] Equipe actuelle : " + team);
-        System.out.println("[INFO] Appuyez sur Entree pour conserver la valeur actuelle.\n");
-
         System.out.print("Nouveau nom [" + team.getLibelle() + "] : ");
         String libelle = in.nextLine().trim();
         if (!libelle.isEmpty()) team.setLibelle(libelle);
-
-        System.out.print("Nouvelle date creation [" + team.getDateCreation() + "] : ");
-        String dateCreation = in.nextLine().trim();
-        if (!dateCreation.isEmpty()) team.setDateCreation(dateCreation);
 
         System.out.print("Nouveaux points [" + team.getPoints() + "] : ");
         String pointsStr = in.nextLine().trim();
@@ -368,62 +350,9 @@ public class Main {
             }
         }
 
-        // === GESTION DES PILOTES ===
-        System.out.println("\n--- Gestion des pilotes ---");
-        List<Driver> drivers = driversDAO.findAll();
-        if (!drivers.isEmpty()) {
-            System.out.println("[INFO] Pilotes disponibles :");
-            for (int i = 0; i < drivers.size(); i++) {
-                System.out.printf("  %d. %s %s (ID: %d)%n", i+1, drivers.get(i).getFirstname(), drivers.get(i).getLastname(), drivers.get(i).getId());
-            }
-
-            // Pilotes actuels de l'équipe
-            List<Driver> currentDrivers = driversDAO.findByTeam(id);
-            System.out.println("\n[INFO] Pilotes actuels de l'équipe :");
-            if (currentDrivers.isEmpty()) {
-                System.out.println("  Aucun pilote");
-            } else {
-                currentDrivers.forEach(d -> System.out.println("  > " + d));
-            }
-
-            // Nouveaux pilotes (max 2)
-            List<Integer> newPilotIds = new ArrayList<>();
-            int maxPilotes = Math.min(2, drivers.size());
-            
-            for (int i = 0; i < maxPilotes; i++) {
-                System.out.printf("Pilote %d (ID, 0 pour ignorer) : ", i+1);
-                int userId = readIntSafely();
-                if (userId > 0) {
-                    User selectedUser = usersDAO.findById(userId);
-                    if (selectedUser != null) {
-                        newPilotIds.add(userId);
-                        System.out.println("[INFO] Selectionne: " + selectedUser.getFirstname() + " " + selectedUser.getLastname());
-                    } else {
-                        System.out.println("[ATTENTION] Pilote non trouve, ignore.");
-                    }
-                }
-            }
-
-            // Supprimer anciens liens et ajouter nouveaux
-            if (!newPilotIds.isEmpty()) {
-                teamsDAO.removeAllTeamUsers(id); // Supprime tous les anciens liens
-                for (int userId : newPilotIds) {
-                    teamsDAO.associateTeamUser(id, userId);
-                }
-            }
-        }
-
-        System.out.print("\nConfirmer la modification ? (o/n) : ");
-        String confirm = in.nextLine().trim().toLowerCase();
-        if (!confirm.equals("o") && !confirm.equals("oui")) {
-            System.out.println("[INFO] Modification annulee.");
-            return;
-        }
-
         int rows = teamsDAO.update(team);
-        System.out.println(rows == 1 ? "[SUCCES] Equipe mise a jour." : "[ERREUR] Echec mise a jour.");
+        System.out.println(rows == 1 ? "[SUCCES] Equipe mise a jour." : "[ERREUR] Echec.");
     }
-
 
     private static void deleteTeam() {
         System.out.print("ID de l'equipe a supprimer : ");
@@ -493,42 +422,9 @@ public class Main {
         String nom = in.nextLine().trim();
         if (!nom.isEmpty()) c.setNom(nom);
 
-        System.out.print("Nouvelle longueur [" + c.getLongueur() + "] : ");
-        String longueurStr = in.nextLine().trim();
-        if (!longueurStr.isEmpty()) {
-            try {
-                c.setLongueur(Double.parseDouble(longueurStr));
-            } catch (NumberFormatException e) {
-                System.out.println("[ATTENTION] Longueur invalide, conservation de la valeur.");
-            }
-        }
-
-        System.out.print("Nouvel ID localisation [" + c.getIdLocalisation() + "] : ");
-        String idLocStr = in.nextLine().trim();
-        if (!idLocStr.isEmpty()) {
-            try {
-                int newIdLoc = Integer.parseInt(idLocStr);
-                if (newIdLoc > 0) {
-                    c.setIdLocalisation(newIdLoc);
-                } else {
-                    System.out.println("[ATTENTION] ID localisation invalide, conservation de la valeur.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("[ATTENTION] ID localisation invalide, conservation de la valeur.");
-            }
-        }
-
-        System.out.print("Confirmer la modification ? (o/n) : ");
-        String confirm = in.nextLine().trim().toLowerCase();
-        if (!confirm.equals("o") && !confirm.equals("oui")) {
-            System.out.println("[INFO] Modification annulee.");
-            return;
-        }
-
         int rows = circuitsDAO.update(c);
         System.out.println(rows == 1 ? "[SUCCES] Circuit mis a jour." : "[ERREUR] Echec.");
     }
-
 
     private static void deleteCircuit() {
         System.out.print("ID du circuit a supprimer : ");
@@ -608,5 +504,264 @@ public class Main {
 
     private static boolean isValidName(String name) {
         return name.matches("^[a-zA-ZÀ-ÿ\\s'-]+$");
+    }
+
+    // ==========================================
+    // MENU SAISONS
+    // ==========================================
+    private static void menuSaisons() {
+        int choice;
+        do {
+            System.out.println("\n=== MENU SAISONS ===");
+            System.out.println("1. Creer saison");
+            System.out.println("2. Lister saisons");
+            System.out.println("3. Modifier saison");
+            System.out.println("4. Supprimer saison");
+            System.out.println("5. Stats d'une saison");
+            System.out.println("0. Retour");
+            System.out.print("Choix : ");
+            choice = readIntSafely();
+
+            switch (choice) {
+                case 1 -> createSaison();
+                case 2 -> listSaisons();
+                case 3 -> updateSaison();
+                case 4 -> deleteSaison();
+                case 5 -> showSeasonStats();
+            }
+        } while (choice != 0);
+    }
+
+    private static void createSaison() {
+        System.out.println("--- Creation d'une saison ---");
+        String nom = readNonEmptyString("Nom (ex: Saison F1 2026) : ");
+        System.out.print("Annee : ");
+        int annee = readIntSafely();
+        String dateDebut = readNonEmptyString("Date debut (YYYY-MM-DD) : ");
+        String dateFin = readNonEmptyString("Date fin (YYYY-MM-DD) : ");
+
+        Saison saison = new Saison(0, nom, annee, dateDebut, dateFin);
+        int rows = saisonsDAO.create(saison);
+        System.out.println(rows == 1 ? "[SUCCES] Saison creee." : "[ERREUR] Echec.");
+    }
+
+    private static void listSaisons() {
+        System.out.println("--- Liste des saisons ---");
+        List<Saison> saisons = saisonsDAO.findAll();
+        if (saisons.isEmpty()) {
+            System.out.println("[INFO] Aucune saison.");
+        } else {
+            saisons.forEach(s -> System.out.println("  > " + s));
+        }
+    }
+
+    private static void updateSaison() {
+        System.out.print("ID de la saison a modifier : ");
+        int id = readIntSafely();
+        Saison s = saisonsDAO.findById(id);
+        
+        if (s == null) {
+            System.out.println("[ERREUR] Saison introuvable.");
+            return;
+        }
+
+        System.out.println("[INFO] Saison actuelle : " + s);
+        System.out.print("Nouveau nom [" + s.getNom() + "] : ");
+        String nom = in.nextLine().trim();
+        if (!nom.isEmpty()) s.setNom(nom);
+
+        int rows = saisonsDAO.update(s);
+        System.out.println(rows == 1 ? "[SUCCES] Saison mise a jour." : "[ERREUR] Echec.");
+    }
+
+    private static void deleteSaison() {
+        System.out.print("ID de la saison a supprimer : ");
+        int id = readIntSafely();
+        System.out.print("Confirmer ? (o/n) : ");
+        String confirm = in.nextLine().trim().toLowerCase();
+        
+        if (confirm.equals("o") || confirm.equals("oui")) {
+            int rows = saisonsDAO.delete(id);
+            System.out.println(rows == 1 ? "[SUCCES] Supprime." : "[ERREUR] Echec.");
+        }
+    }
+
+    private static void showSeasonStats() {
+        System.out.print("ID de la saison : ");
+        int id = readIntSafely();
+        saisonsDAO.getSeasonStats(id);
+    }
+
+    // ==========================================
+    // MENU EVENEMENTS
+    // ==========================================
+    private static void menuEvenements() {
+        int choice;
+        do {
+            System.out.println("\n=== MENU EVENEMENTS (COURSES) ===");
+            System.out.println("1. Creer evenement");
+            System.out.println("2. Lister tous evenements");
+            System.out.println("3. Evenements d'une saison");
+            System.out.println("4. Supprimer evenement");
+            System.out.println("0. Retour");
+            System.out.print("Choix : ");
+            choice = readIntSafely();
+
+            switch (choice) {
+                case 1 -> createEvenement();
+                case 2 -> listAllEvents();
+                case 3 -> listEventsBySeason();
+                case 4 -> deleteEvenement();
+            }
+        } while (choice != 0);
+    }
+
+    private static void createEvenement() {
+        System.out.println("--- Creation d'un evenement ---");
+        String nom = readNonEmptyString("Nom (ex: Grand Prix de Monaco) : ");
+        String dateHeure = readNonEmptyString("Date et heure (YYYY-MM-DD HH:MM:SS) : ");
+        System.out.print("ID type evenement (5=Course principale) : ");
+        int idType = readIntSafely();
+        System.out.print("ID saison : ");
+        int idSaison = readIntSafely();
+        System.out.print("ID circuit : ");
+        int idCircuit = readIntSafely();
+
+        Evenement evt = new Evenement(0, nom, dateHeure, idType, idSaison, idCircuit);
+        int rows = evenementsDAO.create(evt);
+        System.out.println(rows == 1 ? "[SUCCES] Evenement cree." : "[ERREUR] Echec.");
+    }
+
+    private static void listEventsBySeason() {
+        System.out.print("ID de la saison : ");
+        int saisonId = readIntSafely();
+        List<Evenement> events = evenementsDAO.findBySeason(saisonId);
+        
+        if (events.isEmpty()) {
+            System.out.println("[INFO] Aucun evenement pour cette saison.");
+        } else {
+            System.out.println("[INFO] Evenements trouves :");
+            events.forEach(e -> System.out.println("  > " + e));
+        }
+    }
+
+    private static void listAllEvents() {
+        System.out.println("--- Tous les evenements ---");
+        List<Evenement> events = evenementsDAO.findAll();
+        
+        if (events.isEmpty()) {
+            System.out.println("[INFO] Aucun evenement.");
+        } else {
+            System.out.println("[INFO] " + events.size() + " evenement(s) :\n");
+            events.forEach(e -> System.out.println("  > " + e));
+        }
+    }
+
+
+    private static void deleteEvenement() {
+        System.out.print("ID de l'evenement a supprimer : ");
+        int id = readIntSafely();
+        System.out.print("Confirmer ? (o/n) : ");
+        String confirm = in.nextLine().trim().toLowerCase();
+        
+        if (confirm.equals("o") || confirm.equals("oui")) {
+            int rows = evenementsDAO.delete(id);
+            System.out.println(rows == 1 ? "[SUCCES] Supprime." : "[ERREUR] Echec.");
+        }
+    }
+
+    private static void showSeasonCalendar() {
+        System.out.print("ID de la saison (2 pour 2025) : ");
+        int saisonId = readIntSafely();
+        evenementsDAO.displaySeasonCalendar(saisonId);
+    }
+
+    // ==========================================
+    // MENU RESULTATS
+    // ==========================================
+    private static void menuResultats() {
+        int choice;
+        do {
+            System.out.println("\n=== MENU RESULTATS ===");
+            System.out.println("1. Ajouter resultat");
+            System.out.println("2. Voir resultats d'une course");
+            System.out.println("3. Voir podium d'une course");
+            System.out.println("4. Resultats saison d'un pilote");
+            System.out.println("5. Victoires d'un pilote");
+            System.out.println("0. Retour");
+            System.out.print("Choix : ");
+            choice = readIntSafely();
+
+            switch (choice) {
+                case 1 -> addResult();
+                case 2 -> showEventResults();
+                case 3 -> showPodium();
+                case 4 -> showDriverSeasonResults();
+                case 5 -> showDriverWins();
+            }
+        } while (choice != 0);
+    }
+
+    private static void addResult() {
+        System.out.println("--- Ajouter un resultat ---");
+        System.out.print("ID driver : ");
+        int driverId = readIntSafely();
+        System.out.print("ID bareme (1=1er place, 2=2e, etc.) : ");
+        int baremeId = readIntSafely();
+        System.out.print("ID evenement : ");
+        int eventId = readIntSafely();
+
+        int rows = resultatsDAO.create(driverId, baremeId, eventId);
+        System.out.println(rows == 1 ? "[SUCCES] Resultat ajoute." : "[ERREUR] Echec.");
+    }
+
+    private static void showEventResults() {
+        System.out.print("ID de l'evenement : ");
+        int eventId = readIntSafely();
+        resultatsDAO.getEventResults(eventId);
+    }
+
+    private static void showPodium() {
+        System.out.print("ID de l'evenement : ");
+        int eventId = readIntSafely();
+        resultatsDAO.getPodium(eventId);
+    }
+
+    private static void showDriverSeasonResults() {
+        System.out.print("ID du pilote : ");
+        int driverId = readIntSafely();
+        System.out.print("ID de la saison : ");
+        int saisonId = readIntSafely();
+        resultatsDAO.getDriverSeasonResults(driverId, saisonId);
+    }
+
+    private static void showDriverWins() {
+        System.out.print("ID du pilote : ");
+        int driverId = readIntSafely();
+        resultatsDAO.getDriverWins(driverId);
+    }
+
+    // ==========================================
+    // STATISTIQUES
+    // ==========================================
+    private static void showDriverStats() {
+        System.out.print("ID du pilote : ");
+        int driverId = readIntSafely();
+        statistiquesDAO.getDriverStats(driverId);
+    }
+
+    private static void compareTwoDrivers() {
+        System.out.print("ID du pilote 1 : ");
+        int driver1 = readIntSafely();
+        System.out.print("ID du pilote 2 : ");
+        int driver2 = readIntSafely();
+        statistiquesDAO.compareDrivers(driver1, driver2);
+    }
+
+    private static void showLastWinners() {
+        System.out.print("Nombre de derniers vainqueurs a afficher : ");
+        int limit = readIntSafely();
+        if (limit <= 0) limit = 5;
+        statistiquesDAO.getLastWinners(limit);
     }
 }
