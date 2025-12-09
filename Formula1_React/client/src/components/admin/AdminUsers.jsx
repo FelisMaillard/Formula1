@@ -124,7 +124,7 @@ export const AdminUsers = () => {
 
   if (loading) return (
     <div className="flex items-center justify-center py-12">
-      <div className="glass-card px-8 py-6">
+      <div className="glass-card-no-hover px-8 py-6">
         <div className="flex items-center gap-3">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-f1-red"></div>
           <span className="text-white text-lg">Loading users...</span>
@@ -136,7 +136,7 @@ export const AdminUsers = () => {
   return (
     <div className="space-y-8">
       {/* Form Section */}
-      <div className="glass-card p-6 lg:p-8">
+      <div className="glass-card-no-hover p-6 lg:p-8">
         <h2 className="text-3xl font-bold gradient-text mb-6">
           {editingId ? '✏️ Edit User' : '➕ Add New User / Driver'}
         </h2>
@@ -201,7 +201,7 @@ export const AdminUsers = () => {
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-6 p-4 glass-card">
+          <div className="flex flex-wrap gap-6 p-4 glass-card-no-hover">
             <label className="flex items-center space-x-3 cursor-pointer group">
               <input
                 type="checkbox"
@@ -224,7 +224,7 @@ export const AdminUsers = () => {
           </div>
 
           {formData.is_driver && (
-            <div className="glass-card p-6 space-y-4 animate-fade-in">
+            <div className="glass-card-no-hover p-6 space-y-4 animate-fade-in">
               <h4 className="text-lg font-semibold text-white mb-4">Driver Information</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -277,7 +277,7 @@ export const AdminUsers = () => {
       </div>
 
       {/* Table Section */}
-      <div className="glass-card p-6 lg:p-8">
+      <div className="glass-card-no-hover p-6 lg:p-8">
         <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
           <span>👥</span>
           <span>Users & Drivers</span>

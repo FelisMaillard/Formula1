@@ -104,7 +104,7 @@ export const AdminResults = () => {
 
   if (loading) return (
     <div className="flex items-center justify-center py-12">
-      <div className="glass-card px-8 py-6">
+      <div className="glass-card-no-hover px-8 py-6">
         <div className="flex items-center gap-3">
           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-f1-red"></div>
           <span className="text-white text-lg">Loading results...</span>
@@ -116,7 +116,7 @@ export const AdminResults = () => {
   return (
     <div className="space-y-8">
       {/* Form Section */}
-      <div className="glass-card p-6 lg:p-8">
+      <div className="glass-card-no-hover p-6 lg:p-8">
         <h2 className="text-3xl font-bold gradient-text mb-6">
           {editingId ? '✏️ Edit Result' : '➕ Add New Result'}
         </h2>
@@ -193,7 +193,7 @@ export const AdminResults = () => {
       </div>
 
       {/* Table Section */}
-      <div className="glass-card p-6 lg:p-8">
+      <div className="glass-card-no-hover p-6 lg:p-8">
         <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
           <span>📊</span>
           <span>Results List</span>

@@ -81,6 +81,10 @@ body {
     box-shadow: 0 0 20px rgba(225, 6, 0, 0.5);
   }
 
+  .glass-card-no-hover {
+    @apply glass rounded-2xl p-6;
+  }
+
   .glass-card-hover {
     @apply glass-card;
   }

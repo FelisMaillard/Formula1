@@ -4,6 +4,7 @@ import { Navbar } from './components/Navbar';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 // Pages
+import { Home } from './pages/Home';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Dashboard } from './pages/Dashboard';
@@ -24,9 +25,10 @@ function App() {
           <main className="pt-20">
             <Routes>
               {/* Public routes */}
+              <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/teams" element={<Teams />} />
               <Route path="/drivers" element={<Drivers />} />
               <Route path="/circuits" element={<Circuits />} />

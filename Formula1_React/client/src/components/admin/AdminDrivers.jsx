@@ -89,106 +89,151 @@ export const AdminDrivers = () => {
     setEditingId(null);
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center py-12">
+      <div className="glass-card-no-hover px-8 py-6">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-f1-red"></div>
+          <span className="text-white text-lg">Loading drivers...</span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-6">
-        {editingId ? 'Edit Driver' : 'Add New Driver'}
-      </h2>
+    <div className="space-y-8">
+      {/* Form Section */}
+      <div className="glass-card-no-hover p-6 lg:p-8">
+        <h2 className="text-3xl font-bold gradient-text mb-6">
+          {editingId ? '✏️ Edit Driver' : '➕ Add New Driver'}
+        </h2>
 
-      <form onSubmit={handleSubmit} className="mb-8 space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {!editingId && (
-            <input
-              type="number"
-              placeholder="User ID *"
-              value={formData.id_user}
-              onChange={(e) => setFormData({ ...formData, id_user: e.target.value })}
-              className="px-4 py-2 border rounded-md"
-              required
-            />
-          )}
-          <input
-            type="number"
-            placeholder="Points"
-            value={formData.points}
-            onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) || 0 })}
-            className="px-4 py-2 border rounded-md"
-          />
-          {!editingId && (
-            <select
-              value={formData.id_team}
-              onChange={(e) => setFormData({ ...formData, id_team: e.target.value })}
-              className="px-4 py-2 border rounded-md"
-            >
-              <option value="">Sélectionner une équipe (optionnel)</option>
-              {teams.map(team => (
-                <option key={team.id_team} value={team.id_team}>
-                  {team.libelle}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {!editingId && (
+              <div className="space-y-2">
+                <label className="text-white/70 text-sm font-medium">User ID *</label>
+                <input
+                  type="number"
+                  placeholder="User ID"
+                  value={formData.id_user}
+                  onChange={(e) => setFormData({ ...formData, id_user: e.target.value })}
+                  className="input-glass"
+                  required
+                />
+              </div>
+            )}
+            <div className="space-y-2">
+              <label className="text-white/70 text-sm font-medium">Points</label>
+              <input
+                type="number"
+                placeholder="0"
+                value={formData.points}
+                onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) || 0 })}
+                className="input-glass"
+              />
+            </div>
+            {!editingId && (
+              <div className="space-y-2">
+                <label className="text-white/70 text-sm font-medium">Team (optional)</label>
+                <select
+                  value={formData.id_team}
+                  onChange={(e) => setFormData({ ...formData, id_team: e.target.value })}
+                  className="input-glass"
+                >
+                  <option value="">No team assigned</option>
+                  {teams.map(team => (
+                    <option key={team.id_team} value={team.id_team}>
+                      {team.libelle}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
 
-        <div className="flex gap-2">
-          <button
-            type="submit"
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            {editingId ? 'Update' : 'Create'}
-          </button>
-          {editingId && (
+          <div className="flex gap-3 pt-2">
             <button
-              type="button"
-              onClick={handleCancel}
-              className="px-6 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500"
+              type="submit"
+              className="glass-button-gradient"
             >
-              Cancel
+              {editingId ? '💾 Update Driver' : '✨ Create Driver'}
             </button>
-          )}
-        </div>
-      </form>
+            {editingId && (
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="glass-button"
+              >
+                ✖️ Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prénom</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Points</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {drivers.map((driver) => (
-              <tr key={driver.id_driver}>
-                <td className="px-6 py-4 whitespace-nowrap">{driver.id_driver}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{driver.firstname}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{driver.lastname}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{driver.email}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{driver.points}</td>
-                <td className="px-6 py-4 whitespace-nowrap space-x-2">
-                  <button
-                    onClick={() => handleEdit(driver)}
-                    className="text-blue-600 hover:text-blue-900"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(driver.id_driver)}
-                    className="text-red-600 hover:text-red-900"
-                  >
-                    Delete
-                  </button>
-                </td>
+      <div className="glass-card-no-hover">
+        <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+          <span>🏎️</span>
+          <span>Drivers List</span>
+          <span className="text-sm font-normal text-white/50">({drivers.length} drivers)</span>
+        </h3>
+
+        <div className="overflow-x-auto">
+          <table className="table-glass">
+            <thead>
+              <tr>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">ID</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">First Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Last Name</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Email</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Points</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-white/90">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {drivers.map((driver, index) => (
+                <tr
+                  key={driver.id_driver}
+                  className="group hover:bg-white/5 transition-colors duration-200"
+                  style={{
+                    animationDelay: `${index * 0.05}s`
+                  }}
+                >
+                  <td className="px-6 py-4 text-white/70">{driver.id_driver}</td>
+                  <td className="px-6 py-4">
+                    <span className="font-semibold text-white">{driver.firstname}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="font-semibold text-white">{driver.lastname}</span>
+                  </td>
+                  <td className="px-6 py-4 text-white/70">{driver.email}</td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full bg-f1-red/20 text-f1-red font-semibold text-sm">
+                      {driver.points || 0} pts
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(driver)}
+                        className="px-4 py-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition-all duration-200 font-medium text-sm"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(driver.id_driver)}
+                        className="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all duration-200 font-medium text-sm"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

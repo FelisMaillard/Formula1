@@ -54,7 +54,7 @@ export const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center gap-2">
             <Link
-              to="/"
+              to="/dashboard"
               className="px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all duration-300"
             >
               Dashboard
