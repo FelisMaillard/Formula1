@@ -12,6 +12,7 @@ import { Drivers } from './pages/Drivers';
 import { Circuits } from './pages/Circuits';
 import { Calendar } from './pages/Calendar';
 import { Standings } from './pages/Standings';
+import { Statistics } from './pages/Statistics';
 import { Admin } from './pages/Admin';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
               <Route path="/circuits" element={<Circuits />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/standings" element={<Standings />} />
+              <Route path="/statistics" element={<Statistics />} />
 
               {/* Protected admin routes */}
               <Route

@@ -1,0 +1,19 @@
+{
+  "name": "Formula 1 Championship",
+  "short_name": "F1 App",
+  "description": "Formula 1 Championship Management System",
+  "theme_color": "#030303",
+  "background_color": "#030303",
+  "display": "standalone",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

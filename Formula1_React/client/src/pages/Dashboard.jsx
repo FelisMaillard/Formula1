@@ -308,6 +308,14 @@ export const Dashboard = () => {
             <div className="font-semibold text-white">Standings</div>
           </Link>
 
+          <Link
+            to="/statistics"
+            className="glass-card-hover group text-center"
+          >
+            <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">📊</div>
+            <div className="font-semibold text-white">Statistics</div>
+          </Link>
+
           {user?.isAdmin && (
             <Link
               to="/admin"
